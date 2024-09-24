@@ -10,7 +10,7 @@ const groq = createOpenAI({
 });
 export async function continueConversation(messages: CoreMessage[]) {
   const result = await streamText({
-    prompt: ``,
+    system: "You are a helpful assistant",
     model: groq("llama3-8b-8192"),
     messages,
   });
