@@ -1,10 +1,7 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { Snack, getSupportedSDKVersions, SDKVersion } from "snack-sdk";
+"use client"
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Editor } from "@monaco-editor/react";
 import {
   Select,
   SelectContent,
@@ -12,18 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  LucideIcon,
-  Search,
-  Save,
-  Download,
-  Code,
-  ExternalLink,
-} from "lucide-react";
-import defaults from "@/app/snack/defaults";
-
-const INITIAL_CODE_CHANGES_DELAY = 500;
-const VERBOSE = typeof window !== "undefined";
+import { Search, Save, Download, Code, ExternalLink, ChevronRight, Folder, File, MoreVertical } from "lucide-react";
 
 const INITIAL_CODE = `import { Text, SafeAreaView, StyleSheet } from 'react-native';
 
@@ -61,75 +47,39 @@ const styles = StyleSheet.create({
   },
 });`;
 
-const IconButton = ({
-  icon: Icon,
-  ...props
-}: { icon: LucideIcon } & React.ComponentProps<typeof Button>) => (
-  <Button variant="ghost" size="icon" {...props}>
+const IconButton = ({ icon: Icon }) => (
+  <Button variant="ghost" size="sm" className="p-2">
     <Icon className="h-4 w-4" />
   </Button>
 );
 
 export default function SnackEditor() {
-  const [snack] = useState(
-    () =>
-      new Snack({
-        ...defaults,
-        disabled: typeof window === "undefined",
-        codeChangesDelay: INITIAL_CODE_CHANGES_DELAY,
-        verbose: VERBOSE,
-      })
-  );
-  const [snackState, setSnackState] = useState(snack.getState());
-  const [isClientReady, setClientReady] = useState(false);
-
-  useEffect(() => {
-    const listeners = [
-      snack.addStateListener((state) => setSnackState(state)),
-      snack.addLogListener(({ message }) => console.log(message)),
-    ];
-    if (typeof window !== "undefined") {
-      setClientReady(true);
-      snack.setOnline(true);
-    }
-    return () => {
-      listeners.forEach((listener) => listener());
-      snack.setOnline(false);
-    };
-  }, [snack]);
-
-  const handleCodeChange = (newCode: string | undefined) => {
-    if (newCode) {
-      snack.updateFiles({
-        "App.js": {
-          type: "CODE",
-          contents: newCode,
-        },
-      });
-    }
-  };
+  const [code, setCode] = useState(INITIAL_CODE);
+  const [projectName, setProjectName] = useState("biased red chocolates");
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <header className="flex justify-between items-center p-2 bg-white border-b">
+      {/* Header */}
+      <header className="flex justify-between items-center px-3 py-2 border-b bg-white">
         <div className="flex items-center space-x-2">
-          <img src="/snack-icon.png" alt="Snack" className="w-6 h-6" />
+          <div className="w-6 h-6 bg-gray-200 rounded" />
           <Input
-            value={snackState.name || "uplifting red blueberries"}
-            onChange={(e) => snack.setName(e.target.value)}
-            className="border-none text-sm font-normal w-48"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            className="w-48 h-8 text-sm bg-transparent border-none"
           />
           <span className="text-xs text-gray-500">Not saved yet.</span>
         </div>
+
         <div className="flex items-center space-x-2">
-          <Input
-            placeholder="Search API"
-            className="h-8 w-48 text-sm"
-            startAdornment={<Search className="h-4 w-4 text-gray-500" />}
-          />
-          <Button variant="primary" size="sm">
-            Save
-          </Button>
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <Input
+              placeholder="Search API"
+              className="h-8 w-48 pl-8 text-sm"
+            />
+          </div>
+          <Button size="sm" variant="default" className="bg-blue-500 hover:bg-blue-600">Save</Button>
           <IconButton icon={Download} />
           <IconButton icon={Code} />
           <IconButton icon={ExternalLink} />
@@ -138,57 +88,91 @@ export default function SnackEditor() {
           </div>
         </div>
       </header>
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1">
-          <Editor
-            height="100%"
-            defaultLanguage="javascript"
-            defaultValue={INITIAL_CODE}
-            onChange={handleCodeChange}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              lineNumbers: "on",
-              roundedSelection: false,
-              scrollBeyondLastLine: false,
-              readOnly: false,
-              theme: "vs-light",
-            }}
-          />
-        </div>
-        <div className="flex justify-between items-center p-2 bg-gray-100 border-t">
-          <div className="flex space-x-2">
-            <span className="text-sm font-medium">Open files</span>
-            <Button variant="ghost" size="sm" className="text-sm">
+
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <div className="w-60 border-r bg-white">
+          <div className="p-2">
+            <div className="flex items-center px-2 py-1">
+              <ChevronRight className="h-4 w-4" />
+              <span className="text-sm ml-1">Open files</span>
+            </div>
+            <div className="bg-gray-100 px-2 py-1 text-sm rounded">
+              <File className="h-4 w-4 inline mr-2" />
               App.js
-            </Button>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Select defaultValue="web">
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="android">Android</SelectItem>
-                <SelectItem value="ios">iOS</SelectItem>
-                <SelectItem value="web">Web</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm">
-              Format
-            </Button>
-            <Select defaultValue="51.0.0">
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {getSupportedSDKVersions().map((version) => (
-                  <SelectItem key={version} value={version}>
-                    {version}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="p-2">
+            <div className="flex items-center justify-between px-2 py-1">
+              <div className="flex items-center">
+                <ChevronRight className="h-4 w-4" />
+                <span className="text-sm ml-1">Project</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <File className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Folder className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="pl-6 text-sm space-y-1">
+              <div className="flex items-center">
+                <Folder className="h-4 w-4 mr-2" />
+                assets
+              </div>
+              <div className="flex items-center">
+                <Folder className="h-4 w-4 mr-2" />
+                components
+              </div>
+              <div className="flex items-center">
+                <File className="h-4 w-4 mr-2" />
+                App.js
+              </div>
+              <div className="flex items-center">
+                <File className="h-4 w-4 mr-2" />
+                package.json
+              </div>
+              <div className="flex items-center">
+                <File className="h-4 w-4 mr-2" />
+                README.md
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Editor Area */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 overflow-auto">
+            <textarea
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className="w-full h-full font-mono text-sm p-4 focus:outline-none resize-none"
+              spellCheck="false"
+            />
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end items-center p-2 bg-white border-t">
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" className="h-8">
+                My Device
+              </Button>
+              <Button variant="outline" size="sm" className="h-8">
+                Android
+              </Button>
+              <Button variant="outline" size="sm" className="h-8">
+                iOS
+              </Button>
+              <Button variant="default" size="sm" className="h-8 bg-blue-500 hover:bg-blue-600">
+                Web
+              </Button>
+              <IconButton icon={ExternalLink} />
+            </div>
           </div>
         </div>
       </div>
