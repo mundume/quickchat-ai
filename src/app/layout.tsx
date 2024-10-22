@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+
 import { ClerkProvider } from "@clerk/nextjs";
 import { NavBar } from "@/components/navbar";
 import "@uploadthing/react/styles.css";
+import "./globals.css";
 
 // ...
 

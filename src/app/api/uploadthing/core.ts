@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -12,27 +12,27 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
       // This code runs on your server before upload
-      const user = await auth();
+      const user = await currentUser();
 
       // If you throw, the user will not be able to upload
       if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.userId };
+      return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
-      await prisma.file.create({
-        data: {
-          name: "pdfgd",
-          uploadStatus: "completed",
-          key: file.key,
-          size: file.size,
-          url: file.url,
-          userId: metadata.userId,
-        },
-      });
+      //   console.log("Upload complete for userId:", metadata.userId);
+      //   await prisma.file.create({
+      //     data: {
+      //       name: "pdfgd",
+      //       uploadStatus: "completed",
+      //       key: file.key,
+      //       size: file.size,
+      //       url: file.url,
+      //       userId: metadata.userId,
+      //     },
+      //   });
 
       console.log("file url", file.url);
 

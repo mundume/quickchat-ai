@@ -1,19 +1,48 @@
-// app/page.js
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Snack, getSupportedSDKVersions } from "snack-sdk";
-import { StyleSheet, css } from "aphrodite";
+import React, { useState, useEffect } from "react";
+import { Snack, getSupportedSDKVersions, SDKVersion } from "snack-sdk";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Editor } from "@monaco-editor/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  LucideIcon,
+  Search,
+  Save,
+  Download,
+  Code,
+  ExternalLink,
+} from "lucide-react";
+import defaults from "@/app/snack/defaults";
 
-const INITIAL_CODE = `
-import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+const INITIAL_CODE_CHANGES_DELAY = 500;
+const VERBOSE = typeof window !== "undefined";
+
+const INITIAL_CODE = `import { Text, SafeAreaView, StyleSheet } from 'react-native';
+
+// You can import supported modules from npm
+import { Card } from 'react-native-paper';
+
+// or any files within the Snack
+import AssetExample from './components/AssetExample';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Hello, Snack!</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.paragraph}>
+        Change code in the editor and watch it change on your phone! Save to get a shareable url.
+      </Text>
+      <Card>
+        <AssetExample />
+      </Card>
+    </SafeAreaView>
   );
 }
 
@@ -21,141 +50,148 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#ecf0f1',
+    padding: 8,
   },
-  text: {
-    fontSize: 24,
+  paragraph: {
+    margin: 24,
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
-});
-`;
+});`;
 
-export default function SnackDe() {
-  const webPreviewRef = useRef(null);
-  const [snack, setSnack] = useState(null);
-  const [snackState, setSnackState] = useState(null);
+const IconButton = ({
+  icon: Icon,
+  ...props
+}: { icon: LucideIcon } & React.ComponentProps<typeof Button>) => (
+  <Button variant="ghost" size="icon" {...props}>
+    <Icon className="h-4 w-4" />
+  </Button>
+);
+
+export default function SnackEditor() {
+  const [snack] = useState(
+    () =>
+      new Snack({
+        ...defaults,
+        disabled: typeof window === "undefined",
+        codeChangesDelay: INITIAL_CODE_CHANGES_DELAY,
+        verbose: VERBOSE,
+      })
+  );
+  const [snackState, setSnackState] = useState(snack.getState());
   const [isClientReady, setClientReady] = useState(false);
 
   useEffect(() => {
+    const listeners = [
+      snack.addStateListener((state) => setSnackState(state)),
+      snack.addLogListener(({ message }) => console.log(message)),
+    ];
     if (typeof window !== "undefined") {
-      const newSnack = new Snack({
-        files: {
-          "App.js": {
-            type: "CODE",
-            contents: INITIAL_CODE,
-          },
-        },
-        webPreviewRef,
-      });
-      setSnack(newSnack);
-      setSnackState(newSnack.getState());
       setClientReady(true);
+      snack.setOnline(true);
     }
-  }, []);
-
-  useEffect(() => {
-    if (snack) {
-      const unsubscribe = snack.addStateListener((state) => {
-        setSnackState(state);
-      });
-      return () => unsubscribe();
-    }
+    return () => {
+      listeners.forEach((listener) => listener());
+      snack.setOnline(false);
+    };
   }, [snack]);
 
-  const handleCodeChange = (event) => {
-    snack.updateFiles({
-      "App.js": {
-        type: "CODE",
-        contents: event.target.value,
-      },
-    });
+  const handleCodeChange = (newCode: string | undefined) => {
+    if (newCode) {
+      snack.updateFiles({
+        "App.js": {
+          type: "CODE",
+          contents: newCode,
+        },
+      });
+    }
   };
-
-  const handleSDKVersionChange = (event) => {
-    snack.setSDKVersion(event.target.value);
-  };
-
-  if (!snackState) return <div>Loading...</div>;
-
-  const { files, sdkVersion, webPreviewURL } = snackState;
 
   return (
-    <div className={css(styles.container)}>
-      <div className={css(styles.left)}>
-        <h2>Code</h2>
-        <textarea
-          className={css(styles.code)}
-          value={files["App.js"].contents}
-          onChange={handleCodeChange}
-        />
-      </div>
-      <div className={css(styles.right)}>
-        <div className={css(styles.settings)}>
-          <h2>Settings</h2>
-          <label>SDK Version</label>
-          <select value={sdkVersion} onChange={handleSDKVersionChange}>
-            {getSupportedSDKVersions().map((ver) => (
-              <option key={ver} value={ver}>
-                {ver}
-              </option>
-            ))}
-          </select>
+    <div className="flex flex-col h-screen bg-white">
+      <header className="flex justify-between items-center p-2 bg-white border-b">
+        <div className="flex items-center space-x-2">
+          <img src="/snack-icon.png" alt="Snack" className="w-6 h-6" />
+          <Input
+            value={snackState.name || "uplifting red blueberries"}
+            onChange={(e) => snack.setName(e.target.value)}
+            className="border-none text-sm font-normal w-48"
+          />
+          <span className="text-xs text-gray-500">Not saved yet.</span>
         </div>
-        <div className={css(styles.preview)}>
-          <h2>Preview</h2>
-          <div className={css(styles.previewContainer)}>
-            {isClientReady && (
-              <iframe
-                className={css(styles.previewFrame)}
-                ref={(c) => (webPreviewRef.current = c?.contentWindow ?? null)}
-                src={webPreviewURL}
-                allow="geolocation; camera; microphone"
-              />
-            )}
+        <div className="flex items-center space-x-2">
+          <Input
+            placeholder="Search API"
+            className="h-8 w-48 text-sm"
+            startAdornment={<Search className="h-4 w-4 text-gray-500" />}
+          />
+          <Button variant="primary" size="sm">
+            Save
+          </Button>
+          <IconButton icon={Download} />
+          <IconButton icon={Code} />
+          <IconButton icon={ExternalLink} />
+          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white">
+            N
+          </div>
+        </div>
+      </header>
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1">
+          <Editor
+            height="100%"
+            defaultLanguage="javascript"
+            defaultValue={INITIAL_CODE}
+            onChange={handleCodeChange}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              lineNumbers: "on",
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              readOnly: false,
+              theme: "vs-light",
+            }}
+          />
+        </div>
+        <div className="flex justify-between items-center p-2 bg-gray-100 border-t">
+          <div className="flex space-x-2">
+            <span className="text-sm font-medium">Open files</span>
+            <Button variant="ghost" size="sm" className="text-sm">
+              App.js
+            </Button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select defaultValue="web">
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="android">Android</SelectItem>
+                <SelectItem value="ios">iOS</SelectItem>
+                <SelectItem value="web">Web</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm">
+              Format
+            </Button>
+            <Select defaultValue="51.0.0">
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {getSupportedSDKVersions().map((version) => (
+                  <SelectItem key={version} value={version}>
+                    {version}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "row",
-    padding: 20,
-    height: "100vh",
-  },
-  left: {
-    flex: 1,
-    marginRight: 20,
-  },
-  right: {
-    width: 300,
-  },
-  code: {
-    width: "100%",
-    height: "calc(100% - 40px)",
-    border: "1px solid #ccc",
-    borderRadius: 4,
-    padding: 10,
-  },
-  settings: {
-    marginBottom: 20,
-  },
-  preview: {
-    height: "calc(100% - 100px)",
-  },
-  previewContainer: {
-    height: "calc(100% - 40px)",
-    border: "1px solid #ccc",
-    borderRadius: 4,
-    overflow: "hidden",
-  },
-  previewFrame: {
-    width: "100%",
-    height: "100%",
-    border: 0,
-  },
-});
