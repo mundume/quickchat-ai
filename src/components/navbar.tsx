@@ -19,7 +19,7 @@ export const NavBar = () => {
       <MaxWidthWrapper className="max-w-full ">
         <div className="flex items-center justify-between border-b h-14 border-zinc-200 dark:border-none ">
           <Link href="/" className="z-40 flex font-semibold">
-            <span>plebresume.</span>
+            <span>😀plebUis😀.</span>
           </Link>
           <MobileNav user={user} />
 

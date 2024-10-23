@@ -1,15 +1,17 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search, Save, Download, Code, ExternalLink, ChevronRight, Folder, File, MoreVertical } from "lucide-react";
+  Search,
+  Download,
+  Code,
+  ExternalLink,
+  ChevronRight,
+  Folder,
+  File,
+  MoreVertical,
+} from "lucide-react";
 
 const INITIAL_CODE = `import { Text, SafeAreaView, StyleSheet } from 'react-native';
 
@@ -74,12 +76,15 @@ export default function SnackEditor() {
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search API"
-              className="h-8 w-48 pl-8 text-sm"
-            />
+            <Input placeholder="Search API" className="h-8 w-48 pl-8 text-sm" />
           </div>
-          <Button size="sm" variant="default" className="bg-blue-500 hover:bg-blue-600">Save</Button>
+          <Button
+            size="sm"
+            variant="default"
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            Save
+          </Button>
           <IconButton icon={Download} />
           <IconButton icon={Code} />
           <IconButton icon={ExternalLink} />
@@ -168,7 +173,11 @@ export default function SnackEditor() {
               <Button variant="outline" size="sm" className="h-8">
                 iOS
               </Button>
-              <Button variant="default" size="sm" className="h-8 bg-blue-500 hover:bg-blue-600">
+              <Button
+                variant="default"
+                size="sm"
+                className="h-8 bg-blue-500 hover:bg-blue-600"
+              >
                 Web
               </Button>
               <IconButton icon={ExternalLink} />

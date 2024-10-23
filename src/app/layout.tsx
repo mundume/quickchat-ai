@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/sonner";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { NavBar } from "@/components/navbar";
@@ -35,8 +36,11 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <NavBar />
-          {children}
+          <main>
+            <NavBar />
+            {children}
+          </main>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
