@@ -2,17 +2,31 @@
 
 import { createStreamableValue } from "ai/rsc";
 import { CoreMessage, streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { groq } from "@ai-sdk/groq";
 
-const groq = createOpenAI({
-  baseURL: "https://api.groq.com/openai/v1",
-  apiKey: process.env.GROQ_API_KEY,
-});
-export async function continueConversation(messages: CoreMessage[]) {
+export async function continueConversation({
+  imageUrl,
+  messages,
+}: {
+  imageUrl?: string;
+  messages: CoreMessage[];
+}) {
   const result = await streamText({
-    system: "You are a helpful assistant",
-    model: groq("llama3-8b-8192"),
-    messages,
+    model: groq("llama-3.2-11b-vision-preview"),
+    messages: imageUrl
+      ? [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Describe the image in detail." },
+              {
+                type: "image",
+                image: imageUrl,
+              },
+            ],
+          },
+        ]
+      : messages,
   });
 
   const stream = createStreamableValue(result.textStream);

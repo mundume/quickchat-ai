@@ -17,13 +17,14 @@ export default function Chat() {
   const [messages, setMessages] = useState<CoreMessage[]>([]);
   const [input, setInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { startUpload } = useUploadThing("ImageUploader", {
     onClientUploadComplete: (res) => {
       const uploadedUrl = res?.[0]?.url;
       if (uploadedUrl) {
-        setInput((prev) => prev + uploadedUrl);
+        setCurrentImageUrl(uploadedUrl);
         toast.success("Image uploaded successfully!");
       }
       setIsUploading(false);
@@ -48,17 +49,26 @@ export default function Chat() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isUploading) return;
+    if ((!input.trim() && !currentImageUrl) || isUploading) return;
 
     const newMessages: CoreMessage[] = [
       ...messages,
-      { content: input, role: "user" },
+      {
+        content: input,
+        role: "user",
+      },
     ];
 
     setMessages(newMessages);
     setInput("");
 
-    const result = await continueConversation(newMessages);
+    const result = await continueConversation({
+      messages: newMessages,
+      imageUrl: currentImageUrl,
+    });
+
+    // Clear the image URL after sending
+    setCurrentImageUrl(undefined);
 
     for await (const content of readStreamableValue(result)) {
       setMessages([
@@ -87,6 +97,24 @@ export default function Chat() {
         </div>
       ))}
 
+      {currentImageUrl && (
+        <div className="mb-4 relative">
+          <img
+            src={currentImageUrl}
+            alt="Uploaded image"
+            className="max-w-[200px] rounded-lg"
+          />
+          <Button
+            onClick={() => setCurrentImageUrl(undefined)}
+            className="absolute top-2 right-2"
+            size="sm"
+            variant="destructive"
+          >
+            Remove
+          </Button>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="fixed bottom-0 w-full max-w-md mb-8"
@@ -97,6 +125,7 @@ export default function Chat() {
             ref={fileInputRef}
             onChange={handleFileSelect}
             className="hidden"
+            accept="image/*"
           />
 
           <Button
@@ -119,7 +148,11 @@ export default function Chat() {
               "disabled:cursor-not-allowed disabled:opacity-50"
             )}
             value={input}
-            placeholder="Say something..."
+            placeholder={
+              currentImageUrl
+                ? "Add a message about the image..."
+                : "Say something..."
+            }
             onChange={(e) => setInput(e.target.value)}
             disabled={isUploading}
           />
