@@ -1,14 +1,23 @@
 "use client";
 
-import { UploadButton } from "@/lib/uploadthing";
+import { UploadButton, useUploadThing } from "@/lib/uploadthing";
 import { useClerk } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 export default function Upload() {
   const { user } = useClerk();
+  const {isUploading, routeConfig, startUpload} = useUploadThing(
+    "pdfUploader",
+    {
+      
+    }
+    
+  )
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       {user && (
         <UploadButton
+        content={}
           endpoint="pdfUploader"
           onClientUploadComplete={(res) => {
             // Do something with the response
@@ -21,6 +30,9 @@ export default function Upload() {
           }}
         />
       )}
+      <Button onClick={() => startUpload({
+        
+      })}>Upload</Button>
     </main>
   );
 }

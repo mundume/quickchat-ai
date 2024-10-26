@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { NavBar } from "@/components/navbar";
 import "@uploadthing/react/styles.css";
 import "./globals.css";
+import { AI } from "@/actions/ai";
 
 // ...
 
@@ -33,15 +34,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <main>
-            <NavBar />
-            {children}
-          </main>
-          <Toaster />
-        </body>
+        <AI>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <main>
+              <NavBar />
+              {children}
+            </main>
+            <Toaster />
+          </body>
+        </AI>
       </html>
     </ClerkProvider>
   );

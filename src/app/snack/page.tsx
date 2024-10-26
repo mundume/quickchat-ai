@@ -9,13 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-     Sheet,
-     SheetContent,
-     SheetDescription,
-     SheetHeader,
-     SheetTitle,
-     SheetTrigger,
-   } from "@/components/ui/sheet"
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Select,
   SelectContent,
@@ -26,7 +26,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import defaults from "./defaults";
 import { Download, Save, Settings } from "lucide-react";
-
 
 const INITIAL_CODE_CHANGES_DELAY = 500;
 const VERBOSE = typeof window !== "undefined";
@@ -107,159 +106,158 @@ export default function Home() {
   return (
     <div className="bg-gray-50 h-screen flex flex-col">
       <div className="flex justify-between items-center p-2 bg-white ">
-     <div className="flex items-center space-x-2">
-       <h1 className="text-lg font-semibold">
-        {name}
-       </h1>
-     </div>
-     <div className="flex items-center space-x-2">
-      <Button variant="outline" size="sm"
+        <div className="flex items-center space-x-2">
+          <h1 className="text-lg font-semibold">{name}</h1>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              setIsSaving(true);
+              try {
+                const { id } = await snack.saveAsync();
+                console.log(`Saved with id ${id}`);
+              } catch (err) {
+                console.error("Save failed", err);
+              }
+              setIsSaving(false);
+            }}
+            disabled={isSaving}
+          >
+            <Save className="w-4 h-4 font-normal text-slate-900 mr-2" />{" "}
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
 
-                onClick={async () => {
-                  setIsSaving(true);
-                  try {
-                    const { id } = await snack.saveAsync();
-                    console.log(`Saved with id ${id}`);
-                  } catch (err) {
-                    console.error("Save failed", err);
-                  }
-                  setIsSaving(false);
-                }}
-                disabled={isSaving}
-              >
-              <Save className="w-4 h-4 font-normal text-slate-900 mr-2" />  {isSaving ? "Saving..." : "Save"}
+          <Button
+            size="sm"
+            className=""
+            onClick={async () => {
+              setIsDownloading(true);
+              try {
+                const url = await snack.getDownloadURLAsync();
+                console.log(`Download URL: ${url}, starting download...`);
+                window.open(url, "_blank");
+              } catch (err) {
+                console.error("Get download URL failed", err);
+              }
+              setIsDownloading(false);
+            }}
+            disabled={isDownloading}
+          >
+            <Download className="w-4 h-4 font-normal text-slate-900 mr-2" />{" "}
+            {isDownloading ? "Downloading..." : "Download"}
+          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="pleb" size="icon">
+                <Settings className="w-4 h-4 font-normal text-slate-900" />
               </Button>
-       
-                     <Button  size="sm" className=""
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader></SheetHeader>
 
-                onClick={async () => {
-                  setIsDownloading(true);
-                  try {
-                    const url = await snack.getDownloadURLAsync();
-                    console.log(`Download URL: ${url}, starting download...`);
-                    window.open(url, "_blank");
-                  } catch (err) {
-                    console.error("Get download URL failed", err);
-                  }
-                  setIsDownloading(false);
-                }}
-                disabled={isDownloading}
-              >
-              <Download className="w-4 h-4 font-normal text-slate-900 mr-2" />  {isDownloading ? "Downloading..." : "Download"}
-              </Button>
-       <Sheet>
-  <SheetTrigger asChild>
-    <Button variant="pleb" size="icon"  >
-<Settings className="w-4 h-4 font-normal text-slate-900" />
-    </Button>
-
-
-  </SheetTrigger>
-  <SheetContent>
-    <SheetHeader>
-      </SheetHeader>
-      
-      
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(event) => snack.setName(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={description}
-                onChange={(event) => snack.setDescription(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sdkVersion">SDK Version</Label>
-              <Select
-                value={sdkVersion}
-                onValueChange={(value) =>
-                  snack.setSDKVersion(value as SDKVersion)
-                }
-              >
-                <SelectTrigger id="sdkVersion">
-                  <SelectValue placeholder="Select SDK Version" />
-                </SelectTrigger>
-                <SelectContent>
-                  {getSupportedSDKVersions().map((ver) => (
-                    <SelectItem key={ver} value={ver}>
-                      {ver}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="deviceId">Device ID</Label>
-              <Input
-                id="deviceId"
-                placeholder="xxxx-xxxx"
-                value={deviceId}
-                onChange={(event) => snack.setDeviceId(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="codeChangesDelay">
-                Send Code changes automatically
-              </Label>
-              <Select
-                value={codeChangesDelay.toString()}
-                onValueChange={(value) => {
-                  const delay = Number(value);
-                  snack.setCodeChangesDelay(delay);
-                  setCodeChangesDelay(delay);
-                }}
-              >
-                <SelectTrigger id="codeChangesDelay">
-                  <SelectValue placeholder="Select delay" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="-1">Disabled (-1)</SelectItem>
-                  <SelectItem value="0">Immediately (0)</SelectItem>
-                  <SelectItem value="500">Debounced (after 500ms)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Button onClick={() => snack.setOnline(!online)}>
-                {online ? "Go Offline" : "Go Online"}
-              </Button>
-              {online && (
-                <div>
-                  <p>Status: Online</p>
-                  <p>Online name: {onlineName}</p>
-                  <p>
-                    {Object.keys(connectedClients).length} connected client(s)
-                  </p>
-                </div>
-              )}
-            </div>
-            
-          </div>
-        </CardContent>
-      </Card>
-   
-
-  </SheetContent>
-</Sheet>
-     </div>
-   </div>
-      
-      
-
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle>Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name</Label>
+                      <Input
+                        id="name"
+                        value={name}
+                        onChange={(event) => snack.setName(event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Input
+                        id="description"
+                        value={description}
+                        onChange={(event) =>
+                          snack.setDescription(event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="sdkVersion">SDK Version</Label>
+                      <Select
+                        value={sdkVersion}
+                        onValueChange={(value) =>
+                          snack.setSDKVersion(value as SDKVersion)
+                        }
+                      >
+                        <SelectTrigger id="sdkVersion">
+                          <SelectValue placeholder="Select SDK Version" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getSupportedSDKVersions().map((ver) => (
+                            <SelectItem key={ver} value={ver}>
+                              {ver}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="deviceId">Device ID</Label>
+                      <Input
+                        id="deviceId"
+                        placeholder="xxxx-xxxx"
+                        value={deviceId}
+                        onChange={(event) =>
+                          snack.setDeviceId(event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="codeChangesDelay">
+                        Send Code changes automatically
+                      </Label>
+                      <Select
+                        value={codeChangesDelay.toString()}
+                        onValueChange={(value) => {
+                          const delay = Number(value);
+                          snack.setCodeChangesDelay(delay);
+                          setCodeChangesDelay(delay);
+                        }}
+                      >
+                        <SelectTrigger id="codeChangesDelay">
+                          <SelectValue placeholder="Select delay" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="-1">Disabled (-1)</SelectItem>
+                          <SelectItem value="0">Immediately (0)</SelectItem>
+                          <SelectItem value="500">
+                            Debounced (after 500ms)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Button onClick={() => snack.setOnline(!online)}>
+                        {online ? "Go Offline" : "Go Online"}
+                      </Button>
+                      {online && (
+                        <div>
+                          <p>Status: Online</p>
+                          <p>Online name: {onlineName}</p>
+                          <p>
+                            {Object.keys(connectedClients).length} connected
+                            client(s)
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
 
       <div className="flex-grow">
         <PanelGroup direction="horizontal">
