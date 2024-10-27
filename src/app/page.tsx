@@ -10,11 +10,16 @@ import { cn } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { toast } from "sonner";
 import { Snack, getSupportedSDKVersions, SDKVersion } from "snack-sdk";
+import { highlight, languages } from "prismjs/components/prism-core";
 // import { QRCodeSVG } from "qrcode.react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import "prismjs/themes/prism.css";
+import Editor from "react-simple-code-editor";
 import {
   Sheet,
   SheetContent,
@@ -352,11 +357,16 @@ export default function CombinedInterface() {
               <CardHeader>
                 <CardTitle>Code Editor</CardTitle>
               </CardHeader>
-              <CardContent className="h-[calc(100%-60px)]">
-                <Textarea
-                  className="min-h-[300px] h-full font-mono"
+              <CardContent className="h-[calc(100%-10px)]">
+                <Editor
                   value={files["App.js"].contents as string}
-                  onChange={(event) => handleCodeChange(event.target.value)}
+                  onValueChange={(code) => handleCodeChange(code)}
+                  highlight={(code) => highlight(code, languages.js)}
+                  padding={10}
+                  style={{
+                    fontFamily: '"Fira code", "Fira Mono", monospace',
+                    fontSize: 12,
+                  }}
                 />
               </CardContent>
             </Card>
