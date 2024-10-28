@@ -72,7 +72,7 @@ export default function CombinedInterface() {
     onClientUploadComplete: (res) => {
       const uploadedUrl = res?.[0]?.url;
       if (uploadedUrl) {
-        // setCurrentImageUrl(uploadedUrl);
+        setCurrentImageUrl(uploadedUrl);
         toast.success("Image uploaded successfully!");
       }
       setIsUploading(false);
@@ -127,6 +127,15 @@ export default function CombinedInterface() {
     fileInputRef.current?.click();
   };
 
+  const handleCodeChange = (newCode: string) => {
+    snack.updateFiles({
+      "App.js": {
+        type: "CODE",
+        contents: newCode,
+      },
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if ((!input.trim() && !currentImageUrl) || isUploading) return;
@@ -144,6 +153,7 @@ export default function CombinedInterface() {
 
     const result = await continueConversation({
       messages: newMessages,
+      imageUrl: currentImageUrl, // Include the imageUrl in the server action call
     });
 
     setCurrentImageUrl(undefined);
@@ -158,15 +168,6 @@ export default function CombinedInterface() {
       ]);
       handleCodeChange(content as string);
     }
-  };
-
-  const handleCodeChange = (newCode: string) => {
-    snack.updateFiles({
-      "App.js": {
-        type: "CODE",
-        contents: newCode,
-      },
-    });
   };
 
   return (
@@ -384,6 +385,7 @@ export default function CombinedInterface() {
                 <div className="relative h-full w-full overflow-hidden rounded border border-gray-300">
                   <iframe
                     className="h-full w-full border-0 bg-white"
+                    //@ts-expect-error
                     ref={(c) =>
                       (webPreviewRef.current = c?.contentWindow ?? null)
                     }

@@ -20,30 +20,33 @@ export type ClientMessage = {
 
 export async function continueConversation({
   messages,
+  imageUrl,
 }: {
   messages: CoreMessage[];
+  imageUrl?: string;
 }) {
-  // if (imageUrl) {
-  //   // Step 1: Generate image description
-  //   const descriptionResult = await generateText({
-  //     model: groq("llama-3.2-90b-vision-preview"),
-  //     temperature: 0.2,
-  //     messages: [
-  //       {
-  //         role: "user",
-  //         content: [
-  //           {
-  //             type: "text",
-  //             text: `Describe the attached image in  great detail`,
-  //           },
-  //           { type: "image", image: imageUrl },
-  //         ],
-  //       },
-  //     ],
-  //   });
-  //   imageDescription = descriptionResult.text;
-  //   console.log("image description", imageDescription);
-  // }
+  let imageDescription = "";
+  if (imageUrl) {
+    // Step 1: Generate image description
+    const descriptionResult = await generateText({
+      model: groq("llama-3.2-90b-vision-preview"),
+
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Describe the  image in  great detail detail so a developer can recreate it in React Native.`,
+            },
+            { type: "image", image: imageUrl },
+          ],
+        },
+      ],
+    });
+    imageDescription = descriptionResult.text;
+    console.log("image description", imageDescription);
+  }
 
   // Step 2: Generate content based on conversation and image description
   const result = await streamText({
@@ -116,7 +119,7 @@ function getCodingPrompt() {
   return dedent(systemPrompt);
 }
 
-const getDescriptionPrompt = `Describe the attached image in  great detail detail so a developer can recreate it in React Native. Follow these instructions carefully:
+const getDescriptionPrompt = `Describe the  image in  great detail detail so a developer can recreate it in React Native. Follow these instructions carefully:
 
 Describe Overall Layout and Structure:
 
