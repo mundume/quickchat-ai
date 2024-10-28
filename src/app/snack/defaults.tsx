@@ -7,12 +7,14 @@ const defaultFiles: SnackFiles = {
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ComponentShowcase from './components/ComponentShowcase';
+import {Badge} from './components/ui/badge';
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
         <ComponentShowcase />
+        <Badge>pleb</Badge>
       </ScrollView>
     </GestureHandlerRootView>
   );
