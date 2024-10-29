@@ -30,7 +30,7 @@ export async function continueConversation({
     // Step 1: Generate image description
     const descriptionResult = await generateText({
       model: groq("llama-3.2-90b-vision-preview"),
-      temperature: 0.2,
+      temperature: 0.5,
       maxTokens: 8192,
 
       messages: [
@@ -41,13 +41,22 @@ export async function continueConversation({
               type: "text",
               text: systemPrompt,
             },
-            { type: "image", image: imageUrl, mimeType: "image/jpeg" },
+            { type: "image", image: imageUrl },
           ],
         },
       ],
     });
     imageDescription = descriptionResult.text;
     console.log("image description", imageDescription);
+  }
+
+  if (!imageDescription) {
+    const result = await streamText({
+      model: groq("llama-3.1-70b-versatile"),
+      maxTokens: 8000,
+      messages: messages,
+    });
+    return result.textStream;
   }
 
   // Step 2: Generate content based on conversation and image description
@@ -176,7 +185,7 @@ here is an example image description format : \n
 `;
 
 const systemPrompt = `
-YOU ARE THE WORLD'S LEADING EXPERT IN IMAGE DESCRIPTION ANALYSIS, AWARDED THE "TOP IMAGE DESCRIPTION ANALYST" BY THE INTERNATIONAL SOFTWARE DEVELOPMENT ASSOCIATION (2023). YOUR TASK IS TO METICULOUSLY ANALYZE PROVIDED APP  IMAGES AND DESCRIBE THEM IN PERFECT DETAIL TO A REACT NATIVE ENGINEER.
+YOU ARE THE WORLD'S LEADING EXPERT IN IMAGE DESCRIPTION, AWARDED THE "TOP IMAGE DESCRIPTION" BY THE INTERNATIONAL SOFTWARE DEVELOPMENT ASSOCIATION (2023). YOUR TASK IS TO METICULOUSLY ANALYZE PROVIDED APP  IMAGES AND DESCRIBE THEM IN PERFECT DETAIL TO A REACT NATIVE ENGINEER.
 
 ### INSTRUCTIONS ###
 
@@ -209,8 +218,7 @@ FOLLOW these steps in strict order to DESCRIBE the Image:
 
 5. IMPLEMENTATION GUIDANCE:
    5.1. SUGGEST specific React Native components for each UI element.
-   5.2. PROVIDE example code snippets or property settings where applicable.
-   5.3. EXPLAIN how to replicate animations or interactions using React Native libraries.
+   
 
 6. FINAL REVIEW:
    6.1. ENSURE all details are accurately described.
@@ -228,6 +236,7 @@ OBEY and never do:
 - NEVER FORGET TO FOLLOW THE "CHAIN OF THOUGHTS" BEFORE ANSWERING.
 - NEVER PROVIDE EXAMPLE CODE OR PROPERTY SETTINGS WHERE APPLICABLE.
 - NEVER USE THE EXAMPLE AS A RESPONSE. ONLY USE THE EXAMPLE TO COPY THE FORMAT STRUCTURE.
+-DONT SUGGEST ANY CODE ONLY A DETAILED DESCRIPTION.
 
 
 `;

@@ -308,6 +308,9 @@ const defaultOptions: SnackOptions = {
     "react-native-gesture-handler": { version: "~2.14.0" },
     "@expo/vector-icons": { version: "^13.0.0" },
     "react-native-reanimated": { version: "~3.6.0" },
+    "react-native-safe-area-context": { version: "~4.3.1" },
+    "'@react-navigation/bottom-tabs.js'": { version: "^6.5.7" },
+    "@react-navigation/native": { version: "^6.1.6" },
   },
   codeChangesDelay: 500,
 };
