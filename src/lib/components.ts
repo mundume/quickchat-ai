@@ -199,57 +199,70 @@ const styles = StyleSheet.create({
 
 // Card Component
 
-export const card = `
-import * as React from "react";
-import { View, Text, StyleSheet } from "react-native";
+export const card = `import React from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
 
-type CardProps = {
-  children: React.ReactNode;
-};
-
-export const Card: React.FC<CardProps> = ({ children }) => {
-  return <View style={styles.card}>{children}</View>;
-};
-
-export const CardHeader: React.FC<CardProps> = ({ children }) => {
+export function Card({ 
+  children, 
+  onPress,
+  style 
+}) {
+  const CardComponent = onPress ? Pressable : View;
+  
   return (
-    <View style={styles.header}>
-      <Text style={styles.headerText}>{children}</Text>
+    <CardComponent 
+      style={[styles.container, style]}
+      onPress={onPress}
+    >
+      {children}
+    </CardComponent>
+  );
+}
+
+export function CardHeader({ children, style }) {
+  return (
+    <View style={[styles.header, style]}>
+      {children}
     </View>
   );
-};
+}
 
-export const CardContent: React.FC<CardProps> = ({ children }) => {
-  return <View style={styles.content}>{children}</View>;
-};
+export function CardContent({ children, style }) {
+  return (
+    <View style={[styles.content, style]}>
+      {children}
+    </View>
+  );
+}
 
-export const CardFooter: React.FC<CardProps> = ({ children }) => {
-  return <View style={styles.footer}>{children}</View>;
-};
+export function CardFooter({ children, style }) {
+  return (
+    <View style={[styles.footer, style]}>
+      {children}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
+  container: {
+    backgroundColor: '#ffffff',
     borderRadius: 12,
-    shadowColor: "#000",
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    overflow: "hidden",
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+    overflow: 'hidden',
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0f172a",
+    borderBottomColor: '#f3f4f6',
   },
   content: {
     padding: 16,
@@ -257,111 +270,81 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: '#f3f4f6',
+    backgroundColor: '#f9fafb',
   },
-});
-`;
+});`;
 
 // Input Component
 
-export const input = `
-import * as React from "react";
-import { TextInput, View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+export const input = `import React from 'react';
+import { TextInput, View, StyleSheet } from 'react-native';
 
-type InputProps = {
-  placeholder?: string;
-  value?: string;
-  onChangeText?: (text: string) => void;
-  leftIcon?: string;
-  rightIcon?: string;
-  secureTextEntry?: boolean;
-  error?: boolean;
-  disabled?: boolean;
-};
-
-export const Input: React.FC<InputProps> = ({
+export function Input({
   placeholder,
-  value,
-  onChangeText,
   leftIcon,
   rightIcon,
-  secureTextEntry,
   error,
-  disabled,
-}) => {
+  ...props
+}) {
   return (
-    <View style={[styles.container, error && styles.error, disabled && styles.disabled]}>
+    <View style={[
+      styles.container,
+      error && styles.errorContainer
+    ]}>
       {leftIcon && (
-        <Ionicons
-          name={leftIcon as any}
-          size={20}
-          color={error ? "#ef4444" : "#64748b"}
-          style={styles.leftIcon}
-        />
+        <View style={styles.iconContainer}>
+          {leftIcon}
+        </View>
       )}
       <TextInput
         style={[
           styles.input,
-          leftIcon && styles.paddingLeft,
-          rightIcon && styles.paddingRight,
+          leftIcon && styles.inputWithLeftIcon,
+          rightIcon && styles.inputWithRightIcon,
         ]}
         placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
-        editable={!disabled}
-        placeholderTextColor="#94a3b8"
+        placeholderTextColor="#9ca3af"
+        {...props}
       />
       {rightIcon && (
-        <Ionicons
-          name={rightIcon as any}
-          size={20}
-          color={error ? "#ef4444" : "#64748b"}
-          style={styles.rightIcon}
-        />
+        <View style={styles.iconContainer}>
+          {rightIcon}
+        </View>
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: '#e5e7eb',
     borderRadius: 8,
-    backgroundColor: "#fff",
+    backgroundColor: '#ffffff',
+  },
+  errorContainer: {
+    borderColor: '#ef4444',
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
     paddingHorizontal: 16,
-    fontSize: 16,
-    color: "#0f172a",
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#000000',
   },
-  leftIcon: {
-    marginLeft: 12,
-  },
-  rightIcon: {
-    marginRight: 12,
-  },
-  paddingLeft: {
+  inputWithLeftIcon: {
     paddingLeft: 8,
   },
-  paddingRight: {
+  inputWithRightIcon: {
     paddingRight: 8,
   },
-  error: {
-    borderColor: "#ef4444",
+  iconContainer: {
+    padding: 12,
   },
-  disabled: {
-    backgroundColor: "#f1f5f9",
-    opacity: 0.5,
-  },
-});
-`;
+});`;
 
 // Badge Component
 
@@ -428,3 +411,68 @@ const styles = StyleSheet.create({
   },
 });
 `;
+
+export const typography = `import React from 'react';
+import { Text, StyleSheet } from 'react-native';
+
+const variants = {
+  h1: {
+    fontSize: 32,
+    fontWeight: '800',
+    lineHeight: 40,
+  },
+  h2: {
+    fontSize: 24,
+    fontWeight: '700',
+    lineHeight: 32,
+  },
+  h3: {
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 28,
+  },
+  h4: {
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 24,
+  },
+  p: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  small: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  muted: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6b7280',
+  },
+};
+
+export function Typography({ 
+  variant = 'p', 
+  children, 
+  style,
+  ...props 
+}) {
+  return (
+    <Text 
+      style={[
+        styles.base,
+        variants[variant],
+        style,
+      ]}
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+}
+
+const styles = StyleSheet.create({
+  base: {
+    color: '#000000',
+  },
+});`;

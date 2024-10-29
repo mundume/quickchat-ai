@@ -86,6 +86,13 @@ export default function ComponentShowcase() {
           </View>
           
           <Divider />
+          <View style={styles.section}>
+            <Typography variant="h4">Buttons</Typography>
+          
+            <Button variant="secondary">Button</Button>
+          </View>
+          
+          <Divider />
           
           <View style={styles.section}>
             <Typography variant="h4">Input Fields</Typography>
@@ -177,52 +184,52 @@ import { Pressable, Text, StyleSheet } from 'react-native';
 
 const variants = {
   default: {
-    container: {
+    containerStyle: {
       backgroundColor: '#000000',
     },
-    text: {
+    textStyle: {
       color: '#ffffff',
     },
   },
   destructive: {
-    container: {
+    containerStyle: {
       backgroundColor: '#ef4444',
     },
-    text: {
+    textStyle: {
       color: '#ffffff',
     },
   },
   outline: {
-    container: {
+    containerStyle: {
       backgroundColor: 'transparent',
       borderWidth: 1,
       borderColor: '#e5e7eb',
     },
-    text: {
+    textStyle: {
       color: '#000000',
     },
   },
 };
 
-export function Button({ 
-  children, 
+export function Button({
+  children,
   variant = 'default',
   onPress,
   disabled,
 }) {
-  const variantStyles = variants[variant];
+  const { containerStyle, textStyle } = variants[variant] || variants.default;
 
   return (
     <Pressable
       style={[
         styles.container,
-        variantStyles.container,
+        containerStyle,
         disabled && styles.disabled,
       ]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[styles.text, variantStyles.text]}>
+      <Text style={[styles.text, textStyle]}>
         {children}
       </Text>
     </Pressable>

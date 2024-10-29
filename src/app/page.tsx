@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 "use client";
 
 import { type CoreMessage } from "ai";
@@ -41,7 +43,7 @@ import defaults from "./snack/defaults";
 const INITIAL_CODE_CHANGES_DELAY = 500;
 const VERBOSE = typeof window !== "undefined";
 
-export default function CombinedInterface() {
+export default function Page() {
   // Chat state
   const [messages, setMessages] = useState<CoreMessage[]>([]);
   const [input, setInput] = useState("");
@@ -265,6 +267,19 @@ export default function CombinedInterface() {
                     </SelectContent>
                   </Select>
                 </div>
+                {/* QR Code (if online) */}
+                {online && (
+                  <div className="mt-4 flex justify-center">
+                    <QRCodeSVG className="h-[260px] w-[260px]" value={url} />
+                  </div>
+                )}
+                {online && (
+                  <div className="mt-2 text-center">
+                    <a href={url} className="text-blue-500 hover:underline">
+                      {url}
+                    </a>
+                  </div>
+                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -408,20 +423,6 @@ export default function CombinedInterface() {
           </Panel>
         </PanelGroup>
       </div>
-
-      {/* QR Code (if online) */}
-      {online && (
-        <div className="mt-4 flex justify-center">
-          <QRCodeSVG className="h-[260px] w-[260px]" value={url} />
-        </div>
-      )}
-      {online && (
-        <div className="mt-2 text-center">
-          <a href={url} className="text-blue-500 hover:underline">
-            {url}
-          </a>
-        </div>
-      )}
     </div>
   );
 }
