@@ -50,15 +50,6 @@ export async function continueConversation({
     console.log("image description", imageDescription);
   }
 
-  if (!imageDescription) {
-    const result = await streamText({
-      model: groq("llama-3.1-70b-versatile"),
-      maxTokens: 8000,
-      messages: messages,
-    });
-    return result.textStream;
-  }
-
   // Step 2: Generate content based on conversation and image description
   const result = await streamText({
     model: groq("llama-3.1-70b-versatile"),

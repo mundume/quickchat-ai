@@ -3,18 +3,22 @@ import type { SnackOptions, SnackFiles } from "snack-sdk";
 const defaultFiles: SnackFiles = {
   "App.js": {
     type: "CODE",
-    contents: `import React from 'react';
+    contents: `
+import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Badge } from './components/ui/badge';
 import ComponentShowcase from './components/ComponentShowcase';
-import {Badge} from './components/ui/badge';
+import { Typography } from './components/ui/typography';
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
+       
+        
         <ComponentShowcase />
-        <Badge>pleb</Badge>
+        <Typography variant="h1">Heading 1</Typography>
       </ScrollView>
     </GestureHandlerRootView>
   );
@@ -34,27 +38,65 @@ const styles = StyleSheet.create({
 import { View, StyleSheet } from 'react-native';
 import { Avatar } from './ui/avatar';
 import { Button } from './ui/button';
-import { Card } from './ui/card';
+import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
 import { Badge } from './ui/badge';
+import { Typography } from './ui/typography';
+import { Tabs, Tab } from './ui/tabs';
+import { Input } from './ui/input';
+import { Divider } from './ui/divider';
 
 export default function ComponentShowcase() {
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
-        <View style={styles.section}>
-          <Avatar 
-            source={{ uri: "https://github.com/shadcn.png" }}
-            size="large"
-            fallback="CN"
-          />
-          <Badge variant="default">New</Badge>
-        </View>
+
+         <Card style={styles.card}>
+       
         
-        <View style={styles.section}>
-          <Button variant="default">Default</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="outline">Outline</Button>
-        </View>
+       
+      </Card>
+        <CardHeader>
+          <Typography variant="h3">Components Demo</Typography>
+        </CardHeader>
+        
+        <CardContent>
+          <View style={styles.section}>
+            <Typography variant="h4">Avatar & Badge</Typography>
+            <Avatar 
+              source={{ uri: "https://github.com/shadcn.png" }}
+              size="large"
+              fallback="CN"
+            />
+            <Badge variant="default">New</Badge>
+          </View>
+          
+          <Divider />
+          
+          
+          
+          <Divider />
+          
+          <View style={styles.section}>
+            <Typography variant="h4">Navigation Tabs</Typography>
+            <Tabs>
+              <Tab label="Tab 1" isActive={false} />
+              <Tab label="Tab 2"  onPress={() => {}} />
+              <Tab label="Tab 3" />
+            </Tabs>
+          </View>
+          
+          <Divider />
+          
+          <View style={styles.section}>
+            <Typography variant="h4">Input Fields</Typography>
+            <Input placeholder="Enter your name" />
+            <Input placeholder="Enter your email" />
+          </View>
+        </CardContent>
+        
+        <CardFooter>
+          <Typography variant="muted">Component showcase footer</Typography>
+        </CardFooter>
       </Card>
     </View>
   );
@@ -65,13 +107,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    padding: 16,
     gap: 16,
   },
   section: {
-    flexDirection: 'row',
     gap: 8,
-    alignItems: 'center',
   },
 });`,
   },
@@ -268,14 +307,260 @@ const styles = StyleSheet.create({
 });`,
   },
 
+  "components/ui/typography.js": {
+    type: "CODE",
+    contents: `import React from 'react';
+import { Text, StyleSheet } from 'react-native';
+
+const variants = {
+  h1: {
+    fontSize: 32,
+    fontWeight: '800',
+    lineHeight: 40,
+  },
+  h2: {
+    fontSize: 24,
+    fontWeight: '700',
+    lineHeight: 32,
+  },
+  h3: {
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 28,
+  },
+  h4: {
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 24,
+  },
+  p: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  small: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  muted: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6b7280',
+  },
+};
+
+export function Typography({ 
+  variant = 'p', 
+  children, 
+  style,
+  ...props 
+}) {
+  return (
+    <Text 
+      style={[
+        styles.base,
+        variants[variant],
+        style,
+      ]}
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+}
+
+const styles = StyleSheet.create({
+  base: {
+    color: '#000000',
+  },
+});`,
+  },
+
+  "components/ui/tabs.js": {
+    type: "CODE",
+    contents: `import React from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Typography } from './typography';
+
+export function Tabs({ children }) {
+  return (
+    <View style={styles.tabContainer}>
+      {children}
+    </View>
+  );
+}
+
+export function Tab({ 
+  label, 
+  icon, 
+  isActive, 
+  onPress 
+}) {
+  return (
+    <Pressable 
+      style={[
+        styles.tab,
+        isActive && styles.activeTab
+      ]}
+      onPress={onPress}
+    >
+      {icon}
+      <Typography 
+        variant="small" 
+        style={[
+          styles.tabText,
+          isActive && styles.activeTabText
+        ]}
+      >
+        {label}
+      </Typography>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 4,
+    gap: 4,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  activeTab: {
+    backgroundColor: '#f3f4f6',
+  },
+  tabText: {
+    color: '#6b7280',
+  },
+  activeTabText: {
+    color: '#000000',
+    fontWeight: '500',
+  },
+});`,
+  },
+
+  "components/ui/input.js": {
+    type: "CODE",
+    contents: `import React from 'react';
+import { TextInput, View, StyleSheet } from 'react-native';
+
+export function Input({
+  placeholder,
+  leftIcon,
+  rightIcon,
+  error,
+  ...props
+}) {
+  return (
+    <View style={[
+      styles.container,
+      error && styles.errorContainer
+    ]}>
+      {leftIcon && (
+        <View style={styles.iconContainer}>
+          {leftIcon}
+        </View>
+      )}
+      <TextInput
+        style={[
+          styles.input,
+          leftIcon && styles.inputWithLeftIcon,
+          rightIcon && styles.inputWithRightIcon,
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor="#9ca3af"
+        {...props}
+      />
+      {rightIcon && (
+        <View style={styles.iconContainer}>
+          {rightIcon}
+        </View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+  },
+  errorContainer: {
+    borderColor: '#ef4444',
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#000000',
+  },
+  inputWithLeftIcon: {
+    paddingLeft: 8,
+  },
+  inputWithRightIcon: {
+    paddingRight: 8,
+  },
+  iconContainer: {
+    padding: 12,
+  },
+});`,
+  },
+
   "components/ui/card.js": {
     type: "CODE",
     contents: `import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 
-export function Card({ children, style }) {
+export function Card({ 
+  children, 
+  onPress,
+  style 
+}) {
+  const CardComponent = onPress ? Pressable : View;
+  
   return (
-    <View style={[styles.container, style]}>
+    <CardComponent 
+      style={[styles.container, style]}
+      onPress={onPress}
+    >
+      {children}
+    </CardComponent>
+  );
+}
+
+export function CardHeader({ children, style }) {
+  return (
+    <View style={[styles.header, style]}>
+      {children}
+    </View>
+  );
+}
+
+export function CardContent({ children, style }) {
+  return (
+    <View style={[styles.content, style]}>
+      {children}
+    </View>
+  );
+}
+
+export function CardFooter({ children, style }) {
+  return (
+    <View style={[styles.footer, style]}>
       {children}
     </View>
   );
@@ -295,6 +580,58 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+    overflow: 'hidden',
+  },
+  header: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  content: {
+    padding: 16,
+  },
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
+    backgroundColor: '#f9fafb',
+  },
+});`,
+  },
+
+  "components/ui/divider.js": {
+    type: "CODE",
+    contents: `import React from 'react';
+import { View, StyleSheet } from 'react-native';
+
+export function Divider({ 
+  orientation = 'horizontal',
+  style 
+}) {
+  return (
+    <View 
+      style={[
+        styles.base,
+        orientation === 'vertical' ? styles.vertical : styles.horizontal,
+        style
+      ]} 
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  base: {
+    backgroundColor: '#e5e7eb',
+  },
+  horizontal: {
+    height: 1,
+    width: '100%',
+    marginVertical: 16,
+  },
+  vertical: {
+    width: 1,
+    height: '100%',
+    marginHorizontal: 16,
   },
 });`,
   },
@@ -308,9 +645,6 @@ const defaultOptions: SnackOptions = {
     "react-native-gesture-handler": { version: "~2.14.0" },
     "@expo/vector-icons": { version: "^13.0.0" },
     "react-native-reanimated": { version: "~3.6.0" },
-    "react-native-safe-area-context": { version: "~4.3.1" },
-    "'@react-navigation/bottom-tabs.js'": { version: "^6.5.7" },
-    "@react-navigation/native": { version: "^6.1.6" },
   },
   codeChangesDelay: 500,
 };

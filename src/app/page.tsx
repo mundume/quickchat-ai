@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { continueConversation } from "@/actions/actions";
 import { readStreamableValue } from "ai/rsc";
 import { Upload, Download, Save, Settings } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
@@ -67,7 +68,7 @@ export default function CombinedInterface() {
 
   const [isClientReady, setClientReady] = useState(false);
 
-  // Upload thing setup
+  // Uploadthing setup
   const { startUpload } = useUploadThing("ImageUploader", {
     onClientUploadComplete: (res) => {
       const uploadedUrl = res?.[0]?.url;
@@ -103,11 +104,11 @@ export default function CombinedInterface() {
 
   const {
     files,
-    // url,
-    // deviceId,
-    // online,
-    // onlineName,
-    // connectedClients,
+    url,
+    deviceId,
+    online,
+    onlineName,
+    connectedClients,
     name,
     description,
     sdkVersion,
@@ -409,6 +410,18 @@ export default function CombinedInterface() {
       </div>
 
       {/* QR Code (if online) */}
+      {online && (
+        <div className="mt-4 flex justify-center">
+          <QRCodeSVG className="h-[260px] w-[260px]" value={url} />
+        </div>
+      )}
+      {online && (
+        <div className="mt-2 text-center">
+          <a href={url} className="text-blue-500 hover:underline">
+            {url}
+          </a>
+        </div>
+      )}
     </div>
   );
 }
