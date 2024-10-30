@@ -476,3 +476,37 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
 });`;
+
+export const divider = `import React from 'react';
+import { View, StyleSheet } from 'react-native';
+
+export function Divider({ 
+  orientation = 'horizontal',
+  style 
+}) {
+  return (
+    <View 
+      style={[
+        styles.base,
+        orientation === 'vertical' ? styles.vertical : styles.horizontal,
+        style
+      ]} 
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  base: {
+    backgroundColor: '#e5e7eb',
+  },
+  horizontal: {
+    height: 1,
+    width: '100%',
+    marginVertical: 16,
+  },
+  vertical: {
+    width: 1,
+    height: '100%',
+    marginHorizontal: 16,
+  },
+});`;

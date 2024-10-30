@@ -1,6 +1,6 @@
 export const name = "Avatar";
 export const importDocs = `
-import {Avatar, AvatarImage, AvatarFallback} from './components/ui/avatar';
+import {Avatar} from './components/ui/avatar';
 `;
 export const usageDocs = `
 <Avatar

@@ -1,11 +1,10 @@
-import Upload from "@/components/upload-button";
 import CombinedUploadInput from "@/components/upload-button-input";
 
 export default function UsersPage() {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">User List</h2>
-      <Upload />
+
       <CombinedUploadInput />
       <ul>
         <li className="mb-2">User 1</li>

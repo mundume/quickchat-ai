@@ -23,7 +23,7 @@ const UserAccountNav = () => {
           <Avatar className="rounded-full">
             <AvatarImage
               src={user?.imageUrl}
-              alt={user?.fullName}
+              alt={user?.fullName || ""}
               className="rounded-full"
             />
             <AvatarFallback>CN</AvatarFallback>
