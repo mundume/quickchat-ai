@@ -56,6 +56,7 @@ export default function SnackChatPreview() {
     () =>
       new Snack({
         ...defaults,
+        online: true,
         disabled: typeof window === "undefined",
         codeChangesDelay: INITIAL_CODE_CHANGES_DELAY,
         verbose: VERBOSE,
