@@ -87,22 +87,6 @@ export default function SnackChatPreview() {
   });
 
   // Snack effect
-  useEffect(() => {
-    const listeners = [
-      snack.addStateListener((state) => {
-        setSnackState(state);
-      }),
-      snack.addLogListener(({ message }) => console.log(message)),
-    ];
-    if (typeof window !== "undefined") {
-      setClientReady(true);
-      snack.setOnline(true);
-    }
-    return () => {
-      listeners.forEach((listener) => listener());
-      snack.setOnline(false);
-    };
-  }, [snack, webPreviewURL, webPreviewRef]);
 
   const {
     files,
@@ -172,6 +156,23 @@ export default function SnackChatPreview() {
       handleCodeChange(content as string);
     }
   };
+
+  useEffect(() => {
+    const listeners = [
+      snack.addStateListener((state) => {
+        setSnackState(state);
+      }),
+      snack.addLogListener(({ message }) => console.log(message)),
+    ];
+    if (typeof window !== "undefined") {
+      setClientReady(true);
+      snack.setOnline(true);
+    }
+    return () => {
+      listeners.forEach((listener) => listener());
+      snack.setOnline(false);
+    };
+  }, [snack, webPreviewRef, webPreviewURL]);
 
   return (
     <div className="h-screen flex flex-col">
