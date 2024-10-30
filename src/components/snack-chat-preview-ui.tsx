@@ -172,7 +172,7 @@ export default function SnackChatPreview() {
       listeners.forEach((listener) => listener());
       snack.setOnline(false);
     };
-  }, [snack, webPreviewRef, webPreviewURL]);
+  }, [snack]);
 
   return (
     <div className="h-screen flex flex-col">
