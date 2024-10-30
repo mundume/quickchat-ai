@@ -406,7 +406,7 @@ export default function SnackChatPreview() {
                       (webPreviewRef.current = c?.contentWindow ?? null)
                     }
                     src={isClientReady ? webPreviewURL : undefined}
-                    allow="geolocation; camera; microphone"
+                    allow="geolocation; camera; microphone; screen-wake-lock"
                     title="Snack Preview"
                   />
                   {isClientReady && !webPreviewURL && (
