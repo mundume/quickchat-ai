@@ -102,7 +102,7 @@ export default function SnackChatPreview() {
       listeners.forEach((listener) => listener());
       snack.setOnline(false);
     };
-  }, [snack]);
+  }, [snack, webPreviewURL, webPreviewRef]);
 
   const {
     files,
@@ -406,7 +406,7 @@ export default function SnackChatPreview() {
                       (webPreviewRef.current = c?.contentWindow ?? null)
                     }
                     src={isClientReady ? webPreviewURL : undefined}
-                    allow="geolocation; camera; microphone; screen-wake-lock"
+                    allow="geolocation; camera; microphone; screen-wake-lock;"
                     title="Snack Preview"
                   />
                   {isClientReady && !webPreviewURL && (
