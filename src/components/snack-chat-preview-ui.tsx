@@ -1,11 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 "use client";
 
-import { type CoreMessage } from "ai";
+import { useChat } from "ai/react";
 import { useState, useRef, useEffect } from "react";
-import { continueConversation } from "@/actions/actions";
-import { readStreamableValue } from "ai/rsc";
 import { Upload, Download, Save, Settings } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +10,6 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { toast } from "sonner";
 import { Snack, getSupportedSDKVersions, SDKVersion } from "snack-sdk";
 import { highlight, languages } from "prismjs/components/prism-core";
-// import { QRCodeSVG } from "qrcode.react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,9 +38,8 @@ const INITIAL_CODE_CHANGES_DELAY = 500;
 const VERBOSE = typeof window !== "undefined";
 
 export default function SnackChatPreview() {
-  // Chat state
-  const [messages, setMessages] = useState<CoreMessage[]>([]);
-  const [input, setInput] = useState("");
+  // Chat state using AI SDK
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
   const [isUploading, setIsUploading] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -67,7 +61,6 @@ export default function SnackChatPreview() {
   const [snackState, setSnackState] = useState(snack.getState());
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-
   const [isClientReady, setClientReady] = useState(false);
 
   // Uploadthing setup
@@ -87,6 +80,22 @@ export default function SnackChatPreview() {
   });
 
   // Snack effect
+  useEffect(() => {
+    const listeners = [
+      snack.addStateListener((state) => {
+        setSnackState(state);
+      }),
+      snack.addLogListener(({ message }) => console.log(message)),
+    ];
+    if (typeof window !== "undefined") {
+      setClientReady(true);
+      snack.setOnline(true);
+    }
+    return () => {
+      listeners.forEach((listener) => listener());
+      snack.setOnline(false);
+    };
+  }, [snack]);
 
   const {
     files,
@@ -123,56 +132,13 @@ export default function SnackChatPreview() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if ((!input.trim() && !currentImageUrl) || isUploading) return;
-
-    const newMessages: CoreMessage[] = [
-      ...messages,
-      {
-        content: input,
-        role: "user",
-      },
-    ];
-
-    setMessages(newMessages);
-    setInput("");
-
-    const result = await continueConversation({
-      messages: newMessages,
-      imageUrl: currentImageUrl, // Include the imageUrl in the server action call
-    });
-
-    setCurrentImageUrl(undefined);
-
-    for await (const content of readStreamableValue(result)) {
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: content as string,
-        },
-      ]);
-      handleCodeChange(content as string);
-    }
-  };
-
+  // Extract code content from assistant messages and update editor
   useEffect(() => {
-    const listeners = [
-      snack.addStateListener((state) => {
-        setSnackState(state);
-      }),
-      snack.addLogListener(({ message }) => console.log(message)),
-    ];
-    if (typeof window !== "undefined") {
-      setClientReady(true);
-      snack.setOnline(true);
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === "assistant") {
+      handleCodeChange(lastMessage.content);
     }
-    return () => {
-      listeners.forEach((listener) => listener());
-      snack.setOnline(false);
-    };
-  }, [snack]);
+  }, [messages]);
 
   return (
     <div className="h-screen flex flex-col">
@@ -268,7 +234,6 @@ export default function SnackChatPreview() {
                     </SelectContent>
                   </Select>
                 </div>
-                {/* QR Code (if online) */}
                 {online && (
                   <div className="mt-4 flex justify-center">
                     <QRCodeSVG className="h-[260px] w-[260px]" value={url} />
@@ -294,9 +259,9 @@ export default function SnackChatPreview() {
           <Panel defaultSize={25} minSize={20}>
             <div className="h-full flex flex-col">
               <div className="flex-grow overflow-y-auto p-4">
-                {messages.map((m, i) => (
+                {messages.map((m) => (
                   <div
-                    key={i}
+                    key={m.id}
                     className={cn(
                       "whitespace-pre-wrap p-2 rounded-lg mb-4",
                       m.role === "user"
@@ -304,7 +269,7 @@ export default function SnackChatPreview() {
                         : "bg-gray-100 mr-auto max-w-[80%]"
                     )}
                   >
-                    {m.content as string}
+                    {m.content}
                   </div>
                 ))}
                 {currentImageUrl && (
@@ -325,7 +290,17 @@ export default function SnackChatPreview() {
                   </div>
                 )}
               </div>
-              <form onSubmit={handleSubmit} className="p-4 border-t">
+              <form
+                onSubmit={(e) => {
+                  handleSubmit(e, {
+                    data: currentImageUrl
+                      ? { imageUrl: currentImageUrl }
+                      : undefined,
+                  });
+                  setCurrentImageUrl(undefined);
+                }}
+                className="p-4 border-t"
+              >
                 <div className="relative flex w-full items-center rounded-lg border border-gray-300 bg-white">
                   <input
                     type="file"
@@ -359,7 +334,7 @@ export default function SnackChatPreview() {
                         ? "Add a message about the image..."
                         : "Say something..."
                     }
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={handleInputChange}
                     disabled={isUploading}
                   />
                 </div>
@@ -402,7 +377,6 @@ export default function SnackChatPreview() {
                 <div className="relative h-full w-full overflow-hidden rounded border border-gray-300">
                   <iframe
                     className="h-full w-full border-0 bg-white"
-                    //@ts-ignore
                     ref={(c) =>
                       (webPreviewRef.current = c?.contentWindow ?? null)
                     }
