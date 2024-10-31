@@ -125,7 +125,7 @@ export default function SnackChatPreview() {
 
   const handleCodeChange = (newCode: string) => {
     snack.updateFiles({
-      "App.js": {
+      "App.tsx": {
         type: "CODE",
         contents: newCode,
       },
@@ -297,7 +297,6 @@ export default function SnackChatPreview() {
                       ? { imageUrl: currentImageUrl }
                       : undefined,
                   });
-                  setCurrentImageUrl(undefined);
                 }}
                 className="p-4 border-t"
               >
@@ -352,7 +351,7 @@ export default function SnackChatPreview() {
               </CardHeader>
               <CardContent className="h-[calc(100%-10px)]">
                 <Editor
-                  value={files["App.js"].contents as string}
+                  value={files["App.tsx"].contents as string}
                   onValueChange={(code) => handleCodeChange(code)}
                   highlight={(code) => highlight(code, languages.js)}
                   padding={10}

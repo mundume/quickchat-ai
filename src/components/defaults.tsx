@@ -1,7 +1,7 @@
 import type { SnackOptions, SnackFiles } from "snack-sdk";
 
 const defaultFiles: SnackFiles = {
-  "App.js": {
+  "App.tsx": {
     type: "CODE",
     contents: `
 import React from 'react';
@@ -652,6 +652,14 @@ const defaultOptions: SnackOptions = {
     "react-native-gesture-handler": { version: "~2.14.0" },
     "@expo/vector-icons": { version: "^13.0.0" },
     "react-native-reanimated": { version: "~3.6.0" },
+    "@react-navigation/bottom-tabs": { version: "6.3.1" },
+    "@react-navigation/drawer": { version: "6.4.1" },
+    "@react-navigation/elements": { version: "1.3.3" },
+    "@react-navigation/material-bottom-tabs": { version: "6.2.1" },
+    "@react-navigation/material-top-tabs": { version: "6.2.1" },
+    "@react-navigation/native-stack": { version: "6.6.1" },
+    "@react-navigation/native": { version: "6.0.10" },
+    "@react-navigation/stack": { version: "6.2.1" },
   },
   codeChangesDelay: 500,
 };

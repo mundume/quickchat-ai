@@ -26,9 +26,13 @@ export async function POST(req: Request) {
           content: [
             {
               type: "text",
-              text:
-                `Describe the image in detail. Include all relevant details and provide an accurate description for the image. Include all relevant details and provide an accurate description for the image. as if you were explaingin the image` +
-                dedent(systemPrompt),
+              text: `Please analyze this UI/app screen in detail with a technical focus. Describe:
+                    1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
+                    2. Visual styling (colors, spacing, typography)
+                    3. Apparent interactions and states
+                    4. Notable UX patterns
+
+                    Please be specific and thorough, as this will be used for development reference.Please be specific and thorough, as this will be used for React Native development reference.`,
             },
             { type: "image", image: new URL(data.imageUrl) },
           ],
@@ -67,63 +71,6 @@ export async function POST(req: Request) {
   return result.toDataStreamResponse();
 }
 
-const systemPrompt = `
-YOU ARE THE WORLD'S LEADING EXPERT IN IMAGE DESCRIPTION, AWARDED THE "TOP IMAGE DESCRIPTION" BY THE INTERNATIONAL SOFTWARE DEVELOPMENT ASSOCIATION (2023). YOUR TASK IS TO METICULOUSLY ANALYZE PROVIDED APP  IMAGES AND DESCRIBE THEM IN PERFECT DETAIL TO A REACT NATIVE ENGINEER.
-
-### INSTRUCTIONS ###
-
-- You MUST IDENTIFY and DESCRIBE each UI element in the  image, including but not limited to buttons, text fields, images, icons, and navigation elements.
-- DETAIL the layout structure, hierarchies, and positioning of elements using React Native terminology.
-- SPECIFY any animations, interactions, or dynamic behaviors observeFd or implied in the image.
-- INCLUDE any noticeable design patterns, color schemes, and styling details relevant to React Native implementation.
-- PROVIDE EXPLICIT GUIDANCE on how each UI element can be implemented in React Native, including specific components and properties.
-- You MUST follow the "Chain of thoughts" before answering.
-
-### Chain of Thoughts ###
-
-FOLLOW these steps in strict order to DESCRIBE the Image:
-
-1. UNDERSTAND THE APPEARANCE OF THE APP IMAGE:
-   1.1. OBSERVE and NOTE all visible UI elements.
-   1.2. IDENTIFY the primary purpose and functionality of the screen.
-
-2. BREAK DOWN THE UI ELEMENTS:
-   2.1. LIST all UI components present, such as buttons, text inputs, images, etc.
-   2.2. DESCRIBE the hierarchy and relationships between the elements (e.g., nested components).
-
-3. ANALYZE LAYOUT AND STYLING:
-   3.1. DETAIL the layout, including positions, alignments, and spacing.
-   3.2. DISCUSS any styling aspects, such as colors, fonts, and themes.
-
-4. IDENTIFY INTERACTIONS:
-   4.1. DESCRIBE any animations or interactions (e.g., onPress events).
-   4.2. NOTE any dynamic content or state changes implied by the design.
-
-5. IMPLEMENTATION GUIDANCE:
-   5.1. SUGGEST specific React Native components for each UI element.
-   
-
-6. FINAL REVIEW:
-   6.1. ENSURE all details are accurately described.
-   6.2. VERIFY that the implementation guidance is clear and actionable.
-   6.3. CONFIRM that the description aligns with best practices in React Native development.
-
-### What Not To Do ###
-
-OBEY and never do:
-- NEVER PROVIDE VAGUE OR INCOMPLETE DESCRIPTIONS OF UI ELEMENTS.
-- NEVER IGNORE IMPORTANT UI ELEMENTS OR INTERACTIONS.
-- NEVER USE NON-STANDARD TERMINOLOGY THAT IS NOT RECOGNIZED IN REACT NATIVE DEVELOPMENT.
-- NEVER OMIT DETAILS ABOUT LAYOUT, STYLING, OR DYNAMIC BEHAVIORS.
-- NEVER PROVIDE INCORRECT OR MISLEADING IMPLEMENTATION GUIDANCE.
-- NEVER FORGET TO FOLLOW THE "CHAIN OF THOUGHTS" BEFORE ANSWERING.
-- NEVER PROVIDE EXAMPLE CODE OR PROPERTY SETTINGS WHERE APPLICABLE.
-- NEVER USE THE EXAMPLE AS A RESPONSE. ONLY USE THE EXAMPLE TO COPY THE FORMAT STRUCTURE.
--DONT SUGGEST ANY CODE ONLY A DETAILED DESCRIPTION.
-
-
-`;
-
 function getCodingPrompt() {
   let systemPrompt = `You are a talented React Native developer. You will be given a description of a mobile app screen from the user, and then you will return code for it using React Native and the StyleSheet API. Follow these instructions carefully; it is very important for my job. I will tip you $1 million if you do a good job:
 
@@ -142,11 +89,13 @@ function getCodingPrompt() {
 - Use TypeScript as the language for the React Native component.
 - Use the \`StyleSheet.create\` API for styling. DO NOT USE ARBITRARY VALUES (e.g., \`height: 600\`). Make sure to use consistent color and spacing values.
 - Use margin and padding within the StyleSheet to space out the components nicely.
-- Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`.
-- ONLY IF the user asks for a dashboard, graph, or chart, the react-native-chart-kit library is available for import, e.g., \`import { LineChart } from "react-native-chart-kit";\` & \`<LineChart ... />\`. Please only use this when explicitly requested.
+- Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. just return the React Native code.
+
 - If you need an icon, use icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
 - Make the design look polished and avoid using borders around the entire screen even if described in the prompt. 
-- Always return code only. No other text.
+-AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
+- ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
+- USE THE <TYPOGRAPHY> TAG INSTEAD OF <TEXT> IN PLACES WHERE TEXT IS NECESSARY.
 
 
 `;
@@ -155,6 +104,8 @@ function getCodingPrompt() {
     
 
     Here are the components that are available, along with how to import them, and how to use them:
+
+    
 
     ${shadcnDocs
       .map(
@@ -173,6 +124,98 @@ function getCodingPrompt() {
         `
       )
       .join("\n")}
+
+ Here is the an example on how to use the prestyled components:
+ \n
+ \`\`\`tsx
+      import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Avatar } from './ui/avatar';
+import { Button } from './ui/button';
+import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
+import { Badge } from './ui/badge';
+import { Typography } from './ui/typography';
+import { Tabs, Tab } from './ui/tabs';
+import { Input } from './ui/input';
+import { Divider } from './ui/divider';
+
+export default function ComponentShowcase() {
+  return (
+    <View style={styles.container}>
+      <Card style={styles.card}>
+
+         <Card style={styles.card}>
+       
+        
+       
+      </Card>
+        <CardHeader>
+          <Typography variant="h3">Components Demo</Typography>
+        </CardHeader>
+        
+        <CardContent>
+          <View style={styles.section}>
+            <Typography variant="h4">Avatar & Badge</Typography>
+            <Avatar 
+              source={{ uri: "https://github.com/shadcn.png" }}
+              size="large"
+              fallback="CN"
+            />
+            <Badge variant="default">New</Badge>
+          </View>
+          
+          <Divider />
+          
+          
+          
+          <Divider />
+          
+          <View style={styles.section}>
+            <Typography variant="h4">Navigation Tabs</Typography>
+            <Tabs>
+              <Tab label="Tab 1" isActive={false} />
+              <Tab label="Tab 2"  onPress={() => {}} />
+              <Tab label="Tab 3" />
+            </Tabs>
+          </View>
+          
+          <Divider />
+          <View style={styles.section}>
+            <Typography variant="h4">Buttons</Typography>
+          
+            <Button variant="secondary">Button</Button>
+          </View>
+          
+          <Divider />
+          
+          <View style={styles.section}>
+            <Typography variant="h4">Input Fields</Typography>
+            <Input placeholder="Enter your name" />
+            <Input placeholder="Enter your email" />
+          </View>
+        </CardContent>
+        
+        <CardFooter>
+          <Typography variant="muted">Component showcase footer</Typography>
+        </CardFooter>
+      </Card>
+    </View>
+  );
+}
+  const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+  },
+  card: {
+    gap: 16,
+  },
+  section: {
+    gap: 8,
+  },
+  
+  
+
+
 
     `;
 
