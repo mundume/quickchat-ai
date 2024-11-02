@@ -1,77 +1,7 @@
-import shadcnDocs from "@/lib/docs/index";
-import { groq } from "@ai-sdk/groq";
-import { streamText, generateText } from "ai";
 import dedent from "dedent";
+import shadcnDocs from "./docs/index";
 
-export const maxDuration = 60;
-
-export async function POST(req: Request) {
-  const { messages, data } = await req.json();
-
-  const initialMessages = messages.slice(0, -1);
-  const currentMessage = messages[messages.length - 1];
-
-  let imageDescription = "";
-
-  if (data?.imageUrl) {
-    console.log(data.imageUrl);
-    // Step 1: Generate image description
-    const descriptionResult = await generateText({
-      model: groq("llama-3.2-90b-vision-preview"),
-      temperature: 0.5,
-      maxTokens: 8192,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Please analyze this UI/app screen in detail with a technical focus. Describe:
-                    1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
-                    2. Visual styling (colors, spacing, typography)
-                    3. Apparent interactions and states
-                    4. Notable UX patterns
-
-                    Please be specific and thorough, as this will be used for development reference.Please be specific and thorough, as this will be used for React Native development reference.`,
-            },
-            { type: "image", image: new URL(data.imageUrl) },
-          ],
-        },
-      ],
-    });
-    imageDescription = descriptionResult.text;
-    console.log("image description", imageDescription);
-  }
-
-  // Step 2: Generate content based on conversation and image description
-  const result = await streamText({
-    model: groq("llama-3.1-70b-versatile"),
-    maxTokens: 8000,
-    messages: [
-      {
-        role: "system",
-        content: getCodingPrompt(),
-      },
-      ...(imageDescription
-        ? [
-            {
-              role: "user",
-              content: [{ type: "text", text: imageDescription }],
-            },
-          ]
-        : []),
-      ...initialMessages,
-      {
-        role: "user",
-        content: currentMessage.content,
-      },
-    ],
-  });
-
-  return result.toDataStreamResponse();
-}
-
-function getCodingPrompt() {
+export function getCodingPrompt() {
   let systemPrompt = `You are a talented React Native developer. You will be given a description of a mobile app screen from the user, and then you will return code for it using React Native and the StyleSheet API. Follow these instructions carefully; it is very important for my job. I will tip you $1 million if you do a good job:
 
 - Think carefully step by step about how to recreate the UI described in the prompt.
@@ -221,3 +151,71 @@ export default function ComponentShowcase() {
 
   return dedent(systemPrompt);
 }
+
+export const initialSystemPrompt = `You are a talented React Native developer. You will be given a description of a mobile app screen from the user, and then you will return code for it using React Native and the StyleSheet API. Follow these instructions carefully; it is very important for my job. I will tip you $1 million if you do a good job:
+
+- Think carefully step by step about how to recreate the UI described in the prompt.
+- Create a React Native component for whatever the user asked you to create, and make sure it can run by itself by using a default export.
+- Feel free to have multiple components in the file, but make sure to have one main component that uses all the other components.
+- Make sure the app screen looks exactly like the description provided in the prompt.
+- Pay close attention to background color, text color, font size, font family, padding, margin, border, and any other styling details. Match the colors and sizes exactly.
+- Make sure to code every part of the description, including navigation bars, buttons, input fields, icons, and other interactive elements.
+- Use the exact text from the description for any visible UI elements.
+- Do not add comments in the code such as "<!-- Repeat for each item -->" in place of writing the full code. WRITE THE FULL CODE.
+- Repeat elements as needed to match the description. For example, if there are 15 items, the code should have 15 items. DO NOT LEAVE comments like "<!-- Repeat for each item -->" or bad things will happen.
+- For all images, please use an SVG with a white, gray, or black background and don't try to import them locally or from the internet.
+- Make sure the React Native app is interactive and functional by creating state where needed and having no required props.
+- If you use any imports from React, like useState or useEffect, make sure to import them directly.
+- Use TypeScript as the language for the React Native component.
+- Use the \`StyleSheet.create\` API for styling. DO NOT USE ARBITRARY VALUES (e.g., \`height: 600\`). Make sure to use consistent color and spacing values.
+- Use margin and padding within the StyleSheet to space out the components nicely.
+- Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. just return the React Native code.
+
+- If you need an icon, use mate icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
+- Make the design look polished and avoid using borders around the entire screen even if described in the prompt. 
+-AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
+- ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
+- USE THE <TYPOGRAPHY> TAG INSTEAD OF <TEXT> IN PLACES WHERE TEXT IS NECESSARY.
+
+
+`;
+
+export const descriptionPrompt = `
+
+"Please analyze this UI/app screen in detail with a technical focus. Describe:
+
+1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
+2. Visual styling (colors, spacing, typography)
+3. Apparent interactions and states
+4. Notable UX patterns
+
+Please be specific and thorough, as this will be used for React Native development reference.
+
+Analysis Framework:
+
+1. Overall Appearance
+   - Identify all visible UI elements
+   - Determine primary screen purpose and functionality
+
+2. UI Component Breakdown
+   - List all UI components (buttons, inputs, images, etc.)
+   - Describe component hierarchy and relationships
+
+3. Layout & Styling Analysis
+   - Detail positioning, alignment, and spacing
+   - Document colors, fonts, and theming
+
+4. Interactive Elements
+   - Describe animations and interactions
+   - Note dynamic content and state changes
+
+5. Implementation Guidance
+   - Suggest specific React Native components
+   - Include any relevant libraries or dependencies
+
+6. Quality Check
+   - Verify accuracy of all details
+   - Confirm alignment with React Native best practices
+   - Ensure implementation guidance is actionable"
+
+`;

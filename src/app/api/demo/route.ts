@@ -2,6 +2,7 @@ import shadcnDocs from "@/lib/docs/index";
 import { groq } from "@ai-sdk/groq";
 import { streamText, generateText } from "ai";
 import dedent from "dedent";
+import { MicOff } from "lucide-react";
 
 export const maxDuration = 60;
 
@@ -14,32 +15,29 @@ export async function POST(req: Request) {
   let imageDescription = "";
 
   if (data?.imageUrl) {
-    console.log(data.imageUrl);
-    // Step 1: Generate image description
+    console.log("image url", data.imageUrl);
     const descriptionResult = await generateText({
       model: groq("llama-3.2-90b-vision-preview"),
       temperature: 0.5,
-      maxTokens: 8192,
       messages: [
         {
           role: "user",
           content: [
             {
+              text: descriptionPrompt,
               type: "text",
-              text: `Please analyze this UI/app screen in detail with a technical focus. Describe:
-                    1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
-                    2. Visual styling (colors, spacing, typography)
-                    3. Apparent interactions and states
-                    4. Notable UX patterns
-
-                    Please be specific and thorough, as this will be used for development reference.Please be specific and thorough, as this will be used for React Native development reference.`,
             },
-            { type: "image", image: new URL(data.imageUrl) },
+            {
+              type: "image",
+              image: new URL(data.imageUrl),
+            },
           ],
         },
       ],
     });
+
     imageDescription = descriptionResult.text;
+
     console.log("image description", imageDescription);
   }
 
@@ -96,11 +94,13 @@ function getCodingPrompt() {
 -AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
 - ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
 - USE THE <TYPOGRAPHY> TAG INSTEAD OF <TEXT> IN PLACES WHERE TEXT IS NECESSARY.
+-ALWAYS USE MATERIAL ICONS NOT IONIC ICONS
 
 
 `;
   systemPrompt += `
-    There are some prestyled components available for use. Please use your best judgement to use any of these components if the app calls for one.
+    There are some prestyled components available for use. Please use your best judgement to use any of these components if the app calls for one. 
+    
     
 
     Here are the components that are available, along with how to import them, and how to use them:
@@ -161,7 +161,9 @@ export default function ComponentShowcase() {
               size="large"
               fallback="CN"
             />
-            <Badge variant="default">New</Badge>
+            <Badge variant="default">
+            <Typography variant="p">New</Typography>
+            </Badge>
           </View>
           
           <Divider />
@@ -221,3 +223,43 @@ export default function ComponentShowcase() {
 
   return dedent(systemPrompt);
 }
+
+const descriptionPrompt = `
+
+"Please analyze this UI/app screen in detail with a technical focus. Describe:
+
+1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
+2. Visual styling (colors, spacing, typography)
+3. Apparent interactions and states
+4. Notable UX patterns
+
+Please be specific and thorough, as this will be used for React Native development reference.
+
+Analysis Framework:
+
+1. Overall Appearance
+   - Identify all visible UI elements
+   - Determine primary screen purpose and functionality
+
+2. UI Component Breakdown
+   - List all UI components (buttons, inputs, images, etc.)
+   - Describe component hierarchy and relationships
+
+3. Layout & Styling Analysis
+   - Detail positioning, alignment, and spacing
+   - Document colors, fonts, and theming
+
+4. Interactive Elements
+   - Describe animations and interactions
+   - Note dynamic content and state changes
+
+5. Implementation Guidance
+   - Suggest specific React Native components
+   - Include any relevant libraries or dependencies
+
+6. Quality Check
+   - Verify accuracy of all details
+   - Confirm alignment with React Native best practices
+   - Ensure implementation guidance is actionable"
+
+`;
