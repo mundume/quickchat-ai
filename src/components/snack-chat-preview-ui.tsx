@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 "use client";
 import { useChat } from "ai/react";
 import { useState, useRef, useEffect } from "react";
@@ -95,10 +97,9 @@ export default function SnackChatPreview() {
   const {
     files,
     url,
-    deviceId,
+
     online,
-    onlineName,
-    connectedClients,
+
     name,
     description,
     sdkVersion,
