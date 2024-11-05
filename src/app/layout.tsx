@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
 
-import { ClerkProvider } from "@clerk/nextjs";
 import { NavBar } from "@/components/navbar";
 import "@uploadthing/react/styles.css";
 import "./globals.css";
@@ -32,20 +31,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <AI>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <main>
-              <NavBar />
-              {children}
-            </main>
-            <Toaster />
-          </body>
-        </AI>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <AI>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <main>
+            <NavBar />
+            {children}
+          </main>
+          <Toaster />
+        </body>
+      </AI>
+    </html>
   );
 }

@@ -79,7 +79,7 @@ function getCodingPrompt() {
 - Feel free to have multiple components in the file, but make sure to have one main component that uses all the other components.
 - Make sure the app screen looks exactly like the description provided in the prompt.
 - Pay close attention to background color, text color, font size, font family, padding, margin, border, and any other styling details. Match the colors and sizes exactly.
-- Make sure to code every part of the description, including navigation bars, buttons, input fields, icons, and other interactive elements.
+- Make sure to code every part of the description, including navigation bars,tab bars, buttons, input fields, icons, and other interactive elements.
 - Use the exact text from the description for any visible UI elements.
 - Do not add comments in the code such as "<!-- Repeat for each item -->" in place of writing the full code. WRITE THE FULL CODE.
 - Repeat elements as needed to match the description. For example, if there are 15 items, the code should have 15 items. DO NOT LEAVE comments like "<!-- Repeat for each item -->" or bad things will happen.
@@ -89,9 +89,10 @@ function getCodingPrompt() {
 - Use TypeScript as the language for the React Native component.
 - Use the \`StyleSheet.create\` API for styling. DO NOT USE ARBITRARY VALUES (e.g., \`height: 600\`). Make sure to use consistent color and spacing values.
 - Use margin and padding within the StyleSheet to space out the components nicely.
-- Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. just return the React Native code.
+- Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. 
+DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. just return the React Native code with imports as text.
 
-- If you need an icon, use mate icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
+- If you need an icon, use material icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
 - Make the design look polished and avoid using borders around the entire screen even if described in the prompt. 
 -AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
 - ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
@@ -107,23 +108,7 @@ function getCodingPrompt() {
 
     
 
-    ${shadcnDocs
-      .map(
-        (component) => `
-          <component>
-          <name>
-          ${component.name}
-          </name>
-          <component-docs>
-          ${component.importDocs}
-          </component-docs>
-          <usage-instructions>
-          ${component.usageDocs}
-          </usage-instructions>
-          </component>
-        `
-      )
-      .join("\n")}
+    
 
  Here is the an example on how to use the prestyled components:
  \n
