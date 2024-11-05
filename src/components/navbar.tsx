@@ -2,7 +2,6 @@
 import Image from "next/image";
 import MaxWidthWrapper from "./max-width-wrapper";
 import Link from "next/link";
-import GroqSvg from "./groq-svg";
 import { buttonVariants } from "./ui/button";
 import { Github } from "lucide-react";
 

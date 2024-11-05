@@ -2,7 +2,7 @@
 // @ts-nocheck
 "use client";
 import { useChat } from "ai/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Upload, Download, Save, Settings } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
@@ -119,14 +119,17 @@ export default function SnackChatPreview() {
     fileInputRef.current?.click();
   };
 
-  const handleCodeChange = (newCode: string) => {
-    snack.updateFiles({
-      "App.tsx": {
-        type: "CODE",
-        contents: newCode,
-      },
-    });
-  };
+  const handleCodeChange = useCallback(
+    (newCode: string) => {
+      snack.updateFiles({
+        "App.tsx": {
+          type: "CODE",
+          contents: newCode,
+        },
+      });
+    },
+    [snack]
+  );
 
   // Extract code content from assistant messages and update editor
   useEffect(() => {
@@ -134,7 +137,7 @@ export default function SnackChatPreview() {
     if (lastMessage?.role === "assistant") {
       handleCodeChange(lastMessage.content);
     }
-  }, [messages]);
+  }, [handleCodeChange, messages]);
 
   return (
     <div className="h-screen flex flex-col">
