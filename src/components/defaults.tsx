@@ -3,31 +3,196 @@ import type { SnackOptions, SnackFiles } from "snack-sdk";
 const defaultFiles: SnackFiles = {
   "App.tsx": {
     type: "CODE",
-    contents: `
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+    contents: `import * as React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+
+// Import UI components
+import { Avatar } from './components/ui/avatar';
+import { Button } from './components/ui/button';
+import { Card, CardHeader, CardContent, CardFooter } from './components/ui/card';
 import { Badge } from './components/ui/badge';
-import ComponentShowcase from './components/ComponentShowcase';
 import { Typography } from './components/ui/typography';
 
+import { Input } from './components/ui/input';
+import { Divider } from './components/ui/divider';
+
+// Component Showcase Screen
+function ComponentShowcaseScreen() {
+  const [activeTab, setActiveTab] = React.useState(0);
+
+  return (
+    <ScrollView style={styles.container}>
+      <Card style={styles.card}>
+        <CardHeader>
+          <Typography variant="h5">Components Demo</Typography>
+        </CardHeader>
+        
+        <CardContent>
+          {/* Avatar & Badge Section */}
+          <View style={styles.section}>
+            <Typography variant="subtitle1">Avatar & Badge</Typography>
+            <View style={styles.row}>
+              <Avatar 
+                source={{ uri: 'https://i.pravatar.cc/150?img=1' }}
+                size="large"
+              />
+              <Badge>New</Badge>
+            </View>
+          </View>
+
+          <Divider style={styles.divider} />
+
+          {/* Navigation Tabs Section */}
+          <View style={styles.section}>
+            <Typography variant="subtitle1">Navigation Tabs</Typography>
+            
+          </View>
+
+          <Divider style={styles.divider} />
+
+          {/* Buttons Section */}
+          <View style={styles.section}>
+            <Typography variant="subtitle1">Buttons</Typography>
+            <View style={styles.buttonGroup}>
+              <Button variant="contained">Primary</Button>
+              <Button variant="outlined">Secondary</Button>
+              <Button variant="text">Text</Button>
+            </View>
+          </View>
+
+          <Divider style={styles.divider} />
+
+          {/* Input Fields Section */}
+          <View style={styles.section}>
+            <Typography variant="subtitle1">Input Fields</Typography>
+            <View style={styles.inputGroup}>
+              <Input 
+                placeholder="Standard input"
+                style={styles.input}
+              />
+              <Input 
+                placeholder="Password input"
+                secureTextEntry
+                style={styles.input}
+              />
+            </View>
+          </View>
+        </CardContent>
+
+        <CardFooter>
+          <Typography variant="body2" color="textSecondary">
+            Component showcase footer
+          </Typography>
+        </CardFooter>
+      </Card>
+    </ScrollView>
+  );
+}
+
+// Settings Screen
+function SettingsScreen() {
+  return (
+    <View style={styles.centered}>
+      <Typography variant="h6">Settings</Typography>
+      <View style={styles.buttonGroup}>
+        <Button variant="contained">Account Settings</Button>
+        <Button variant="outlined">Preferences</Button>
+        <Button variant="text">Help</Button>
+      </View>
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+// Main App Component
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-       
-        
-        <ComponentShowcase />
-        <Typography variant="h1">Heading 1</Typography>
-      </ScrollView>
-    </GestureHandlerRootView>
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Showcase') {
+              iconName = focused
+                ? 'view-dashboard'
+                : 'view-dashboard-outline';
+            } else if (route.name === 'Settings') {
+              iconName = focused 
+                ? 'cog'
+                : 'cog-outline';
+            }
+
+            return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        <Tab.Screen 
+          name="Showcase" 
+          component={ComponentShowcaseScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'UI Components'
+          }}
+        />
+        <Tab.Screen 
+          name="Settings" 
+          component={SettingsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Settings'
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    padding: 16,
+  },
+  card: {
+    gap: 16,
+  },
+  section: {
+    gap: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  divider: {
+    marginVertical: 16,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  input: {
+    width: '100%',
+  },
+  tabs: {
+    marginTop: 8,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    gap: 16,
   },
 });`,
   },

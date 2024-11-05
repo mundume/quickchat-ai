@@ -1,5 +1,4 @@
 "use client";
-
 import { useChat } from "ai/react";
 import { useState, useRef, useEffect } from "react";
 import { Upload, Download, Save, Settings } from "lucide-react";
@@ -9,14 +8,10 @@ import { cn } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { toast } from "sonner";
 import { Snack, getSupportedSDKVersions, SDKVersion } from "snack-sdk";
-import { highlight, languages } from "prismjs/components/prism-core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-javascript";
-import "prismjs/themes/prism.css";
-import Editor from "react-simple-code-editor";
+import Editor from "@monaco-editor/react";
 import {
   Sheet,
   SheetContent,
@@ -352,12 +347,13 @@ export default function SnackChatPreview() {
               <CardContent className="h-[calc(100%-10px)]">
                 <Editor
                   value={files["App.tsx"].contents as string}
-                  onValueChange={(code) => handleCodeChange(code)}
-                  highlight={(code) => highlight(code, languages.js)}
-                  padding={10}
-                  style={{
-                    fontFamily: '"Fira code", "Fira Mono", monospace',
-                    fontSize: 12,
+                  onChange={(code) => handleCodeChange(code!)}
+                  language="javascript"
+                  theme="vs-light"
+                  options={{
+                    minimap: {
+                      enabled: false,
+                    },
                   }}
                 />
               </CardContent>

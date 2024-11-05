@@ -27,12 +27,55 @@ export async function POST(req: Request) {
             {
               type: "text",
               text: `Please analyze this UI/app screen in detail with a technical focus. Describe:
-                    1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
-                    2. Visual styling (colors, spacing, typography)
-                    3. Apparent interactions and states
-                    4. Notable UX patterns
 
-                    Please be specific and thorough, as this will be used for development reference.Please be specific and thorough, as this will be used for React Native development reference.`,
+          1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
+          2. Visual styling (colors, spacing, typography)
+          3. Apparent interactions and states
+          4. Notable UX patterns
+          5. Use the analysis framework below to describe the screen in detail.
+          6: Make sure to describe where everything is in the UI so the developer can recreate it and if how elements are aligned
+          7: Pay close attention to background color, text color, font size, font family, padding, margin, border, etc. Match the colors and sizes exactly.
+          8" Make sure to mention every part of the scree including any navigation bars, cards, buttons, etc.
+          9 Make sure to use the exact text from the screen.
+
+          Please be specific and thorough, as this will be used for React Native development reference.
+
+          Analysis Framework:
+
+          1. Overall Appearance
+            - Identify all visible UI elements
+            - Determine primary screen purpose and functionality
+
+          2. UI Component Breakdown
+            - List all UI components (buttons, inputs, images, bottom navigation bars etc.)
+            - Describe component hierarchy and relationships
+            - Identify key components
+            - Identify all 
+            - Note if the contents of a section are in a grid. if so suggest the number of rows and columns and the spacing to the developer 
+
+          3. Layout & Styling Analysis
+            - Detail positioning, alignment, and spacing
+            - Document colors, fonts, and theming
+            - Note if the contents of a section are in a grid. if so suggest the number of rows and columns and the spacing to the developer 
+
+          4. Interactive Elements
+            - Describe animations and interactions
+            - Note dynamic content and state changes
+            - Note if the contents of a section are in a grid. if so suggest the number of rows and columns and the spacing to the developer 
+
+          5. Implementation Guidance
+            - Suggest specific React Native components
+            for bottom tabs use @react-navigation/bottom-tabs library with @react-navigation/native and materialCommunity icons here is a smal import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+
+          6. Quality Check
+            - Verify accuracy of all details
+            - Confirm alignment with React Native best practice
+            - Ensure implementation guidance is actionable
+            
+           
+            `,
             },
             { type: "image", image: new URL(data.imageUrl) },
           ],
@@ -45,7 +88,7 @@ export async function POST(req: Request) {
 
   // Step 2: Generate content based on conversation and image description
   const result = await streamText({
-    model: groq("llama-3.1-70b-versatile"),
+    model: groq("llama-3.2-90b-text-preview"),
     maxTokens: 8000,
     messages: [
       {
@@ -92,7 +135,7 @@ function getCodingPrompt() {
 - Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. 
 DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. just return the React Native code with imports as text.
 
-- If you need an icon, use material icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
+- If you need an icon, use materialCommunity icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
 - Make the design look polished and avoid using borders around the entire screen even if described in the prompt. 
 -AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
 - ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
@@ -108,87 +151,176 @@ DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. j
 
     
 
-    
+    ${shadcnDocs
+      .map(
+        (component) => `
+          <component>
+          <name>
+          ${component.name}
+          </name>
+          <component-docs>
+          ${component.importDocs}
+          </component-docs>
+          <usage-instructions>
+          ${component.usageDocs}
+          </usage-instructions>
+          </component>
+        `
+      )
+      .join("\n")}
 
  Here is the an example on how to use the prestyled components:
- \n
- \`\`\`tsx
-      import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Avatar } from './ui/avatar';
-import { Button } from './ui/button';
-import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
-import { Badge } from './ui/badge';
-import { Typography } from './ui/typography';
-import { Tabs, Tab } from './ui/tabs';
-import { Input } from './ui/input';
-import { Divider } from './ui/divider';
 
-export default function ComponentShowcase() {
+      import * as React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+
+// Import UI components
+import { Avatar } from './components/ui/avatar';
+import { Button } from './components/ui/button';
+import { Card, CardHeader, CardContent, CardFooter } from './components/ui/card';
+import { Badge } from './components/ui/badge';
+import { Typography } from './components/ui/typography';
+
+import { Input } from './components/ui/input';
+import { Divider } from './components/ui/divider';
+
+// Component Showcase Screen
+function ComponentShowcaseScreen() {
+  const [activeTab, setActiveTab] = React.useState(0);
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Card style={styles.card}>
-
-         <Card style={styles.card}>
-       
-        
-       
-      </Card>
         <CardHeader>
-          <Typography variant="h3">Components Demo</Typography>
+          <Typography variant="h5">Components Demo</Typography>
         </CardHeader>
         
         <CardContent>
+          {/* Avatar & Badge Section */}
           <View style={styles.section}>
-            <Typography variant="h4">Avatar & Badge</Typography>
-            <Avatar 
-              source={{ uri: "https://github.com/shadcn.png" }}
-              size="large"
-              fallback="CN"
-            />
-            <Badge variant="default">New</Badge>
+            <Typography variant="subtitle1">Avatar & Badge</Typography>
+            <View style={styles.row}>
+              <Avatar 
+                source={{ uri: 'https://i.pravatar.cc/150?img=1' }}
+                size="large"
+              />
+              <Badge>New</Badge>
+            </View>
           </View>
-          
-          <Divider />
-          
-          
-          
-          <Divider />
-          
+
+          <Divider style={styles.divider} />
+
+
+
+          <Divider style={styles.divider} />
+
+          {/* Buttons Section */}
           <View style={styles.section}>
-            <Typography variant="h4">Navigation Tabs</Typography>
-            <Tabs>
-              <Tab label="Tab 1" isActive={false} />
-              <Tab label="Tab 2"  onPress={() => {}} />
-              <Tab label="Tab 3" />
-            </Tabs>
+            <Typography variant="subtitle1">Buttons</Typography>
+            <View style={styles.buttonGroup}>
+              <Button variant="contained">Primary</Button>
+              <Button variant="outlined">Secondary</Button>
+              <Button variant="text">Text</Button>
+            </View>
           </View>
-          
-          <Divider />
+
+          <Divider style={styles.divider} />
+
+          {/* Input Fields Section */}
           <View style={styles.section}>
-            <Typography variant="h4">Buttons</Typography>
-          
-            <Button variant="secondary">Button</Button>
-          </View>
-          
-          <Divider />
-          
-          <View style={styles.section}>
-            <Typography variant="h4">Input Fields</Typography>
-            <Input placeholder="Enter your name" />
-            <Input placeholder="Enter your email" />
+            <Typography variant="subtitle1">Input Fields</Typography>
+            <View style={styles.inputGroup}>
+              <Input 
+                placeholder="Standard input"
+                style={styles.input}
+              />
+              <Input 
+                placeholder="Password input"
+                secureTextEntry
+                style={styles.input}
+              />
+            </View>
           </View>
         </CardContent>
-        
+
         <CardFooter>
-          <Typography variant="muted">Component showcase footer</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Component showcase footer
+          </Typography>
         </CardFooter>
       </Card>
+    </ScrollView>
+  );
+}
+
+// Settings Screen
+function SettingsScreen() {
+  return (
+    <View style={styles.centered}>
+      <Typography variant="h6">Settings</Typography>
+      <View style={styles.buttonGroup}>
+        <Button variant="contained">Account Settings</Button>
+        <Button variant="outlined">Preferences</Button>
+        <Button variant="text">Help</Button>
+      </View>
     </View>
   );
 }
-  const styles = StyleSheet.create({
+
+const Tab = createBottomTabNavigator();
+
+// Main App Component
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Showcase') {
+              iconName = focused
+                ? 'view-dashboard'
+                : 'view-dashboard-outline';
+            } else if (route.name === 'Settings') {
+              iconName = focused 
+                ? 'cog'
+                : 'cog-outline';
+            }
+
+            return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        <Tab.Screen 
+          name="Showcase" 
+          component={ComponentShowcaseScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'UI Components'
+          }}
+        />
+        <Tab.Screen 
+          name="Settings" 
+          component={SettingsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Settings'
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
   },
   card: {
@@ -197,7 +329,36 @@ export default function ComponentShowcase() {
   section: {
     gap: 8,
   },
-  
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  divider: {
+    marginVertical: 16,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  input: {
+    width: '100%',
+  },
+  tabs: {
+    marginTop: 8,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    gap: 16,
+  },
+});
   
 
 
