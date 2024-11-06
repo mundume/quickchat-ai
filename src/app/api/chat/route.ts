@@ -104,6 +104,7 @@ function getCodingPrompt() {
 
 - Think carefully step by step about how to recreate the UI described in the prompt.
 - Create a React Native component for whatever the user asked you to create, and make sure it can run by itself by using a default export.
+-YOU WILL BE PUNISHED IF YOU RETURN TRIPPLE BACKTICKS OR TEXT THAT IS NOT CODE
 - Feel free to have multiple components in the file, but make sure to have one main component that uses all the other components.
 - Make sure the app screen looks exactly like the description provided in the prompt.
 - Pay close attention to background color, text color, font size, font family, padding, margin, border, and any other styling details. Match the colors and sizes exactly.
@@ -117,18 +118,17 @@ function getCodingPrompt() {
 - Use TypeScript as the language for the React Native component.
 - Use the \`StyleSheet.create\` API for styling. DO NOT USE ARBITRARY VALUES (e.g., \`height: 600\`). Make sure to use consistent color and spacing values.
 - Use margin and padding within the StyleSheet to space out the components nicely.
-- Please ONLY return the full React Native code starting with the imports, nothing else. It's very important for my job that you only return the React Native code with imports. 
-DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. just return the React Native code with imports as text.
-
+- Provide code responses without triple backticks, directly displaying the code only
 - If you need an icon, use materialCommunity icons from \`expo/vector-icons\` but make sure they integrate seamlessly.
 - Make the design look polished and avoid using borders around the entire screen even if described in the prompt. 
--AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
+-AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE without any text and triple backticks. YOU WILL BE PUNISHED IF YOU RETURN TRIPPLE BACKTICKS OR TEXT THAT IS NOT CODE.
 - ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
 - for bottom tabs use @react-navigation/bottom-tabs library with @react-navigation/native and materialCommunity icons here is an example \nimport { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';\n
 import { NavigationContainer } from '@react-navigation/native';
 - USE THE <TYPOGRAPHY> TAG INSTEAD OF <TEXT> IN PLACES WHERE TEXT IS NECESSARY.
 - Only add Tabs to the <App /> component.
+- 
 
 
 `;
