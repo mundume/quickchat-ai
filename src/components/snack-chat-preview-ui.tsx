@@ -40,6 +40,8 @@ export default function SnackChatPreview() {
   const [isUploading, setIsUploading] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isStreamingRef = useRef(false);
+  const pendingCodeUpdateRef = useRef<string | null>(null);
 
   // Snack state
   const webPreviewRef = useRef<Window | null>(null);
@@ -121,6 +123,10 @@ export default function SnackChatPreview() {
 
   const handleCodeChange = useCallback(
     (newCode: string) => {
+      if (isStreamingRef.current) {
+        pendingCodeUpdateRef.current = newCode;
+        return;
+      }
       snack.updateFiles({
         "App.tsx": {
           type: "CODE",
@@ -135,10 +141,19 @@ export default function SnackChatPreview() {
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === "assistant") {
+      isStreamingRef.current = true;
       handleCodeChange(lastMessage.content);
+
+      // Delay setting isStreamingRef to false to ensure all updates are processed
+      setTimeout(() => {
+        isStreamingRef.current = false;
+        if (pendingCodeUpdateRef.current !== null) {
+          handleCodeChange(pendingCodeUpdateRef.current);
+          pendingCodeUpdateRef.current = null;
+        }
+      }, 0);
     }
   }, [handleCodeChange, messages]);
-
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}

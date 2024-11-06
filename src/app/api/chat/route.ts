@@ -27,54 +27,39 @@ export async function POST(req: Request) {
             {
               type: "text",
               text: `Please analyze this UI/app screen in detail with a technical focus. Describe:
+          1. Screen Layout
+          - Screen orientation and dimensions
+          - Main container structure (top-to-bottom description)
+          - Element positioning and alignment
+          - Safe area considerations
 
-          1. Core UI elements and their hierarchy (buttons, inputs, layout structure)
-          2. Visual styling (colors, spacing, typography)
-          3. Apparent interactions and states
-          4. Notable UX patterns
-          5. Use the analysis framework below to describe the screen in detail.
-          6: Make sure to describe where everything is in the UI so the developer can recreate it and if how elements are aligned
-          7: Pay close attention to background color, text color, font size, font family, padding, margin, border, etc. Match the colors and sizes exactly.
-          8" Make sure to mention every part of the scree including any navigation bars, cards, buttons, etc.
-          9 Make sure to use the exact text from the screen.
+           2. UI Components
+          For each component, specify:
+          - Type (header, card, button, input, etc.)
+          - Exact position in layout
+          - Dimensions and spacing (padding/margin)
+          - Text content (verbatim)
 
-          Please be specific and thorough, as this will be used for React Native development reference.
+           3. Styling Details
+          - Background colors (exact values)
+          - Text styles (size, color, weight)
+          - Border styles and shadows
+          - Component-specific styling
 
-          Analysis Framework:
+           4. Interactions
+          - Touchable elements
+          - State changes
+          - Navigation patterns
+          - Gestures/animations
 
-          1. Overall Appearance
-            - Identify all visible UI elements
-            - Determine primary screen purpose and functionality
+           5. Platform Considerations
+          - iOS/Android differences
+          - Native component usage
+          - Platform-specific patterns
 
-          2. UI Component Breakdown
-            - List all UI components (buttons, inputs, images, bottom navigation bars etc.)
-            - Describe component hierarchy and relationships
-            - Identify key components
-            - Identify all 
-            - Note if the contents of a section are in a grid. if so suggest the number of rows and columns and the spacing to the developer 
+          Please provide measurements in dp/pt and colors in hex/rgba format.
 
-          3. Layout & Styling Analysis
-            - Detail positioning, alignment, and spacing
-            - Document colors, fonts, and theming
-            - Note if the contents of a section are in a grid. if so suggest the number of rows and columns and the spacing to the developer 
-
-          4. Interactive Elements
-            - Describe animations and interactions
-            - Note dynamic content and state changes
-            - Note if the contents of a section are in a grid. if so suggest the number of rows and columns and the spacing to the developer 
-
-          5. Implementation Guidance
-            - Suggest specific React Native components
-            for bottom tabs use @react-navigation/bottom-tabs library with @react-navigation/native and materialCommunity icons here is a smal import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-
-          6. Quality Check
-            - Verify accuracy of all details
-            - Confirm alignment with React Native best practice
-            - Ensure implementation guidance is actionable
-            
-           
+          
             `,
             },
             { type: "image", image: new URL(data.imageUrl) },
@@ -139,7 +124,11 @@ DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. j
 - Make the design look polished and avoid using borders around the entire screen even if described in the prompt. 
 -AVOID REPLYING WITH TEXT EVEN IF ITS A CONTINUING CONVERSATION. JUST FIX THE CODE AND RETURN THE CODE
 - ALWAYS RETURN CODE.  ALWAYS. AVOID CODE AS Markdown. NO INDICATIONS. JUST CODE AND CODE ONLY.
+- for bottom tabs use @react-navigation/bottom-tabs library with @react-navigation/native and materialCommunity icons here is an example \nimport { MaterialCommunityIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';\n
+import { NavigationContainer } from '@react-navigation/native';
 - USE THE <TYPOGRAPHY> TAG INSTEAD OF <TEXT> IN PLACES WHERE TEXT IS NECESSARY.
+- Only add Tabs to the <App /> component.
 
 
 `;
@@ -169,7 +158,7 @@ DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`. j
       )
       .join("\n")}
 
- Here is the an example on how to use the prestyled components:
+ Here is the an example on how to use the prestyled components and how to add a navigation bar:
 
       import * as React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
@@ -189,7 +178,7 @@ import { Divider } from './components/ui/divider';
 
 // Component Showcase Screen
 function ComponentShowcaseScreen() {
-  const [activeTab, setActiveTab] = React.useState(0);
+ 
 
   return (
     <ScrollView style={styles.container}>
