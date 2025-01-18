@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
   // Step 2: Generate content based on conversation and image description
   const result = await streamText({
-    model: groq("llama-3.2-90b-text-preview"),
+    model: groq("llama-3.1-70b-versatile"),
     maxTokens: 8000,
     messages: [
       {
